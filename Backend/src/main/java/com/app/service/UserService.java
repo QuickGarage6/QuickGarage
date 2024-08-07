@@ -2,6 +2,7 @@ package com.app.service;
 
 import java.util.Optional;
 
+import com.app.dto.UpdatePasswordDto;
 import com.app.entities.User;
 
 public interface UserService {
@@ -14,4 +15,5 @@ public interface UserService {
 
 	public Optional<User> getUserByMobile(String mobile);
 
+	public String updatePassword(String username,UpdatePasswordDto updatePasswordDto) throws Exception;
 }

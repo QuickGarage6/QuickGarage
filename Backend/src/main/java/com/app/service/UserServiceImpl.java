@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.dto.UpdatePasswordDto;
 import com.app.entities.User;
 import com.app.repository.UserRepository;
 
@@ -50,5 +51,22 @@ public class UserServiceImpl implements UserService {
 
 	public Optional<User> getUserByMobile(String mobile) {
 		return userRepository.findByMobileNo(mobile);
+	}
+
+	@Override
+	public String updatePassword(String userName, UpdatePasswordDto updatePasswordDto) throws Exception {
+		User user = userRepository.findByEmail(userName).orElseThrow();
+		String message = "Password updated successfully";
+		if (user != null) {
+			user = userRepository.findByMobileNo(userName).orElseThrow();
+		}
+		if (!updatePasswordDto.getCurrentPassword().equals(user.getPassword())) {
+			throw new Exception("Current password is incorrect");
+		}
+
+		user.setPassword(updatePasswordDto.getNewPassword());
+		userRepository.save(user);
+
+		return message;
 	}
 }
