@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,14 +61,27 @@ public class UserController {
 		return userService.getUserByMobile(mobile).map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
-	
-	 @PutMapping("/{username}/update-password")
-	    public ResponseEntity<?> updatePassword(@PathVariable String username, @RequestBody UpdatePasswordDto updatePasswordDto) {
-	        try {
-	            userService.updatePassword(username, updatePasswordDto);
-	            return ResponseEntity.ok("Password updated successfully");
-	        } catch (Exception e) {
-	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-	        }
-	    }
+
+	@PutMapping("/{username}/update-password")
+	public ResponseEntity<String> updatePassword(@PathVariable String username,
+			@RequestBody UpdatePasswordDto updatePasswordDto) {
+		try {
+
+			userService.updatePassword(username, updatePasswordDto);
+			return ResponseEntity.ok("Password updated successfully");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+
+	@DeleteMapping("/{username}/delete")
+	public ResponseEntity<String> deleteUser(@PathVariable String username) {
+		try {
+			String message = userService.deleteUser(username);
+			return ResponseEntity.ok(message);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+
+	}
 }

@@ -1,5 +1,7 @@
 package com.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +14,7 @@ public class UserSignUpDto {
 	private String mobileNo;
 	private String email;
 	private String password;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String confirmPassword;
 
 }

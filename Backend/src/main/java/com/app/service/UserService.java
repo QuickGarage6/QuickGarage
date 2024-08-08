@@ -16,4 +16,6 @@ public interface UserService {
 	public Optional<User> getUserByMobile(String mobile);
 
 	public String updatePassword(String username,UpdatePasswordDto updatePasswordDto) throws Exception;
+	
+	public String deleteUser(String username) throws Exception;
 }

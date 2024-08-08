@@ -32,11 +32,11 @@ public class UserServiceImpl implements UserService {
 		return userRepository.save(user);
 	}
 
-	public String signIn(String userName, String password) {
-		Optional<User> user = userRepository.findByEmail(userName);
+	public String signIn(String email, String password) {
+		Optional<User> user = userRepository.findByEmail(email);
 		String message = "User not found";
 		if (!user.isPresent()) {
-			user = userRepository.findByMobileNo(userName);
+			user = userRepository.findByMobileNo(email);
 		}
 		if (user.isPresent() && password.equals(user.get().getPassword())) {
 			message = "User login successful";
@@ -54,12 +54,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String updatePassword(String userName, UpdatePasswordDto updatePasswordDto) throws Exception {
-		User user = userRepository.findByEmail(userName).orElseThrow();
+	public String updatePassword(String username, UpdatePasswordDto updatePasswordDto) throws Exception {
+
+		User user = userRepository.findByEmail(username).orElse(null);
 		String message = "Password updated successfully";
-		if (user != null) {
-			user = userRepository.findByMobileNo(userName).orElseThrow();
+		if (user == null) {
+			user = userRepository.findByMobileNo(username).orElse(null);
+			if (user == null)
+				throw new Exception("User not found");
 		}
+
 		if (!updatePasswordDto.getCurrentPassword().equals(user.getPassword())) {
 			throw new Exception("Current password is incorrect");
 		}
@@ -67,6 +71,18 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(updatePasswordDto.getNewPassword());
 		userRepository.save(user);
 
+		return message;
+	}
+
+	@Override
+	public String deleteUser(String username) throws Exception {
+		User user = userRepository.findByEmail(username).orElse(null);
+		String message = "Account deleted successfully";
+		if (user == null) {
+			user = userRepository.findByMobileNo(username).orElseThrow(() -> new Exception("User not found"));
+		}
+
+		userRepository.deleteUser(username);
 		return message;
 	}
 }
