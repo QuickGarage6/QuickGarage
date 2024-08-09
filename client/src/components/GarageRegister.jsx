@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
+
 const GarageRegister = () => {
     const styles = {
         container: 'min-h-screen flex items-center justify-center bg-gray-100 p-4',
@@ -12,75 +14,112 @@ const GarageRegister = () => {
         message: 'text-center py-2 my-2 rounded',
         successMessage: 'bg-green-100 text-green-600 border border-green-300',
         errorMessage: 'bg-red-100 text-red-600 border border-red-300',
-        backToLogin:'flex m-4 p-4 text-center flex justify-center items-center'
+        backToLogin: 'flex m-4 p-4 text-center flex justify-center items-center'
     };
 
     const [formData, setFormData] = useState({
-        fullName: '',
+        ownerName: '',
+        garageName: '',
         mobileNo: '',
+        email: '',
         serviceType: '',
-        streetAddress: '',
-        city: '',
-        state: '',
-        postalCode: '',
-        country: '',
+        addressDto: {
+            streetAddress: '',
+            city: '',
+            state: '',
+            country: '',
+            zipCode: ''
+        },
         licenseNumber: '',
-        yearsOfOperation: '',
-        serviceHours: ''
+        yrsOfOperation: '',
+        password: '',
+        confirmPassword: ''
     });
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
+    const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
+        if (name in formData.addressDto) {
+            setFormData(prevData => ({
+                ...prevData,
+                addressDto: {
+                    ...prevData.addressDto,
+                    [name]: value
+                }
+            }));
+        } else {
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value
+            }));
+        }
+        if (errors[name]) {
+            validateForm();
+        }
     };
 
+    const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const validateMobileNo = (mobileNo) => /^\d{10}$/.test(mobileNo);
+
     const validateForm = () => {
-        for (const key in formData) {
-            if (formData[key] === '') {
-                return false;
-            }
+        let valid = true;
+        let newErrors = {};
+
+        if (!formData.ownerName) {
+            valid = false;
+            newErrors.ownerName = 'Owner name is required.';
         }
-        return true;
+        if (!formData.garageName) {
+            valid = false;
+            newErrors.garageName = 'Garage name is required.';
+        }
+        if (!validateMobileNo(formData.mobileNo)) {
+            valid = false;
+            newErrors.mobileNo = 'Invalid mobile number. Must be 10 digits.';
+        }
+        if (!validateEmail(formData.email)) {
+            valid = false;
+            newErrors.email = 'Invalid email address.';
+        }
+        if (formData.password !== formData.confirmPassword) {
+            valid = false;
+            newErrors.confirmPassword = 'Passwords do not match.';
+        }
+        setErrors(newErrors);
+        return valid;
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!validateForm()) {
-            setMessageType('error');
-            setMessage('Please fill in all the fields.');
             return;
         }
+        console.log("in handle submit");
 
         try {
-            const response = await fetch('/api/garage-register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    latitude,
-                    longitude
-                })
+            console.log("Form Data:", formData);
+            console.log("Latitude:", latitude);
+            console.log("Longitude:", longitude);
+
+            const response = await axios.post('http://192.168.40.149:8080/garage-controller/signUp', {
+                ...formData,
+                latitude,
+                longitude
             });
-            const data = await response.json();
-            if (response.ok) {
-                setMessageType('success');
-                setMessage('Registration successful!');
-            } else {
-                setMessageType('error');
-                setMessage(data.message || 'Registration failed.');
-            }
+
+            console.log("Response Status:", response.status); 
+            console.log("Response Data:", response.data);
+
+            setMessageType('success');
+            setMessage('Registration successful!');
         } catch (error) {
+            console.error("Error:", error);
             setMessageType('error');
-            setMessage('An error occurred while registering.');
+            setMessage(error.response?.data?.message || 'An error occurred while registering.');
         }
     };
 
@@ -97,6 +136,7 @@ const GarageRegister = () => {
     const showPosition = (position) => {
         setLatitude(position.coords.latitude);
         setLongitude(position.coords.longitude);
+
         setMessageType('success');
         setMessage("Location detected successfully. Proceed with registration.");
     };
@@ -121,7 +161,7 @@ const GarageRegister = () => {
                 break;
             default:
                 setMessageType('error');
-                setMessage("An unknown error occurred.");
+                setMessage("An unknown error occurred");
                 break;
         }
     };
@@ -130,75 +170,101 @@ const GarageRegister = () => {
         <div className={styles.container}>
             <div className={styles.form}>
                 <h1 className="text-xl md:text-2xl lg:text-3xl uppercase font-bold text-center mx-8 my-4">Garage Register</h1>
-                {message && (
-                    <div className={`${styles.message} ${messageType === 'success' ? styles.successMessage : styles.errorMessage}`}>
-                        {message}
-                    </div>
-                )}
+
                 <form onSubmit={handleSubmit}>
                     <div className={styles.formItem}>
-                        <label htmlFor="fullName" className={styles.label}>Full Name</label>
-                        <input type="text" name="fullName" placeholder="Enter full name..." className={styles.input} value={formData.fullName} onChange={handleChange} />
+                        <label htmlFor="ownerName" className={styles.label}>Owner Name</label>
+                        <input type="text" name="ownerName" placeholder="Enter name..." className={`${styles.input} ${errors.ownerName ? 'border-red-500' : ''}`} value={formData.ownerName} onChange={handleChange} />
+                        {errors.ownerName && <p className="text-red-500 text-xs">{errors.ownerName}</p>}
+                    </div>
+                    <div className={styles.formItem}>
+                        <label htmlFor="garageName" className={styles.label}>Garage Name</label>
+                        <input type="text" name="garageName" placeholder="Enter Garage name..." className={`${styles.input} ${errors.garageName ? 'border-red-500' : ''}`} value={formData.garageName} onChange={handleChange} />
+                        {errors.garageName && <p className="text-red-500 text-xs">{errors.garageName}</p>}
                     </div>
                     <div className="flex flex-wrap -mx-2">
                         <div className={styles.formItemHalf}>
                             <label htmlFor="mobileNo" className={styles.label}>Mobile No.</label>
-                            <input type="text" name="mobileNo" placeholder="Enter mobile number..." className={styles.input} value={formData.mobileNo} onChange={handleChange} />
+                            <input type="text" name="mobileNo" placeholder="Enter mobile number..." className={`${styles.input} ${errors.mobileNo ? 'border-red-500' : ''}`} value={formData.mobileNo} onChange={handleChange} />
+                            {errors.mobileNo && <p className="text-red-500 text-xs">{errors.mobileNo}</p>}
                         </div>
                         <div className={styles.formItemHalf}>
                             <label htmlFor="serviceType" className={styles.label}>Service Type</label>
-                            <input type="text" name="serviceType" placeholder="Enter service type..." className={styles.input} value={formData.serviceType} onChange={handleChange} />
+                            <input type="text" name="serviceType" placeholder="Enter service type..." className={`${styles.input} ${errors.serviceType ? 'border-red-500' : ''}`} value={formData.serviceType} onChange={handleChange} />
                         </div>
                     </div>
                     <div className={styles.formItem}>
-                        <label htmlFor="streetAddress" className={styles.label}>Street Address</label>
-                        <input type="text" name="streetAddress" placeholder="Enter street address..." className={styles.input} value={formData.streetAddress} onChange={handleChange} />
+                        <label htmlFor="email" className={styles.label}>Email</label>
+                        <input type="email" name="email" placeholder="Enter email address..." className={`${styles.input} ${errors.email ? 'border-red-500' : ''}`} value={formData.email} onChange={handleChange} />
+                        {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
                     </div>
-                    <div className="flex flex-wrap -mx-2">
+                    <div className={styles.formItem}>
+                        <label htmlFor="streetAddress" className={styles.label}>Street Address</label>
+                        <input type="text" name="streetAddress" placeholder="Enter street address..." className={`${styles.input} ${errors.streetAddress ? 'border-red-500' : ''}`} value={formData.addressDto.streetAddress} onChange={handleChange} />
+                        {errors.streetAddress && <p className="text-red-500 text-xs">{errors.streetAddress}</p>}
+                    </div>                    <div className="flex flex-wrap -mx-2">
                         <div className={styles.formItemHalf}>
                             <label htmlFor="city" className={styles.label}>City</label>
-                            <input type="text" name="city" placeholder="Enter city..." className={styles.input} value={formData.city} onChange={handleChange} />
+                            <input type="text" name="city" placeholder="Enter city..." className={`${styles.input} ${errors.city ? 'border-red-500' : ''}`} value={formData.addressDto.city} onChange={handleChange} />
+                            {errors.city && <p className="text-red-500 text-xs">{errors.city}</p>}
                         </div>
                         <div className={styles.formItemHalf}>
                             <label htmlFor="state" className={styles.label}>State/Province</label>
-                            <input type="text" name="state" placeholder="Enter state or province..." className={styles.input} value={formData.state} onChange={handleChange} />
+                            <input type="text" name="state" placeholder="Enter state or province..." className={`${styles.input} ${errors.state ? 'border-red-500' : ''}`} value={formData.addressDto.state} onChange={handleChange} />
+                            {errors.state && <p className="text-red-500 text-xs">{errors.state}</p>}
                         </div>
                     </div>
                     <div className="flex flex-wrap -mx-2">
                         <div className={styles.formItemHalf}>
-                            <label htmlFor="postalCode" className={styles.label}>Postal Code</label>
-                            <input type="text" name="postalCode" placeholder="Enter postal code..." className={styles.input} value={formData.postalCode} onChange={handleChange} />
+                            <label htmlFor="zipCode" className={styles.label}>Zip Code</label>
+                            <input type="text" name="zipCode" placeholder="Enter zip code..." className={`${styles.input} ${errors.zipCode ? 'border-red-500' : ''}`} value={formData.addressDto.zipCode} onChange={handleChange} />
+                            {errors.zipCode && <p className="text-red-500 text-xs">{errors.zipCode}</p>}
                         </div>
                         <div className={styles.formItemHalf}>
                             <label htmlFor="country" className={styles.label}>Country</label>
-                            <input type="text" name="country" placeholder="Enter country..." className={styles.input} value={formData.country} onChange={handleChange} />
+                            <input type="text" name="country" placeholder="Enter country..." className={`${styles.input} ${errors.country ? 'border-red-500' : ''}`} value={formData.addressDto.country} onChange={handleChange} />
+                            {errors.country && <p className="text-red-500 text-xs">{errors.country}</p>}
                         </div>
                     </div>
                     <div className={styles.formItem}>
                         <label htmlFor="licenseNumber" className={styles.label}>License Number</label>
-                        <input type="text" name="licenseNumber" placeholder="Enter license number..." className={styles.input} value={formData.licenseNumber} onChange={handleChange} />
+                        <input type="text" name="licenseNumber" placeholder="Enter license number..." className={`${styles.input} ${errors.licenseNumber ? 'border-red-500' : ''}`} value={formData.licenseNumber} onChange={handleChange} />
+                        {errors.licenseNumber && <p className="text-red-500 text-xs">{errors.licenseNumber}</p>}
                     </div>
                     <div className="flex flex-wrap -mx-2">
                         <div className={styles.formItemHalf}>
-                            <label htmlFor="yearsOfOperation" className={styles.label}>Years of Operation</label>
-                            <input type="text" name="yearsOfOperation" placeholder="Enter years of operation..." className={styles.input} value={formData.yearsOfOperation} onChange={handleChange} />
+                            <label htmlFor="yrsOfOperation" className={styles.label}>Years of Operation</label>
+                            <input type="text" name="yrsOfOperation" placeholder="Enter years of operation..." className={`${styles.input} ${errors.yrsOfOperation ? 'border-red-500' : ''}`} value={formData.yrsOfOperation} onChange={handleChange} />
+                            {errors.yrsOfOperation && <p className="text-red-500 text-xs">{errors.yrsOfOperation}</p>}
                         </div>
                         <div className={styles.formItemHalf}>
-                            <label htmlFor="serviceHours" className={styles.label}>Service Hours</label>
-                            <input type="text" name="serviceHours" placeholder="Enter service hours..." className={styles.input} value={formData.serviceHours} onChange={handleChange} />
+                            <label htmlFor="password" className={styles.label}>Password</label>
+                            <input type="password" name="password" placeholder="Enter password..." className={`${styles.input} ${errors.password ? 'border-red-500' : ''}`} value={formData.password} onChange={handleChange} />
+                            {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap -mx-2">
+                        <div className={styles.formItemHalf}>
+                            <label htmlFor="confirmPassword" className={styles.label}>Confirm Password</label>
+                            <input type="password" name="confirmPassword" placeholder="Confirm password..." className={`${styles.input} ${errors.confirmPassword ? 'border-red-500' : ''}`} value={formData.confirmPassword} onChange={handleChange} />
+                            {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword}</p>}
                         </div>
                     </div>
                     <button type="button" onClick={getLocation} className={styles.button}>Get Location</button>
-                    <div className="hidden">
+                    <div className="sr-only">
                         <input type="text" id="latitude" placeholder="latitude.." readOnly value={latitude || ''} />
                         <input type="text" id="longitude" placeholder="longitude" readOnly value={longitude || ''} />
                     </div>
                     <button type="submit" className={styles.button}>Register</button>
                 </form>
+                {message && (
+                    <div className={`${styles.message} ${messageType === 'success' ? styles.successMessage : styles.errorMessage}`}>
+                        {message}
+                    </div>
+                )}
                 <div className={styles.backToLogin}>
-                    <p>Already Have an account ? </p>
+                    <p>Already Have an account?</p>
                     <Link to="/login" className="underline mx-4">Login</Link>
-
                 </div>
             </div>
         </div>
@@ -206,3 +272,4 @@ const GarageRegister = () => {
 };
 
 export default GarageRegister;
+

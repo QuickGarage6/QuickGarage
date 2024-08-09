@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
 const UserRegistration = () => {
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
+        mobileNo: '',
         email: '',
-        phone: '',
         password: '',
         confirmPassword: ''
     });
@@ -12,9 +14,10 @@ const UserRegistration = () => {
 
     const validate = () => {
         let formErrors = {};
-        if (!formData.name) formErrors.name = "Full Name is required";
+        if (!formData.firstName) formErrors.firstName = "First Name is required";
+        if (!formData.lastName) formErrors.lastName = "Last Name is required";
+        if (!formData.mobileNo) formErrors.mobileNo = "Mobile No is required";
         if (!formData.email) formErrors.email = "Email is required";
-        if (!formData.phone) formErrors.phone = "Phone No is required";
         if (!formData.password) formErrors.password = "Password is required";
         if (formData.password !== formData.confirmPassword) formErrors.confirmPassword = "Passwords do not match";
         return formErrors;
@@ -30,7 +33,7 @@ const UserRegistration = () => {
         setErrors({});
 
         try {
-            const response = await fetch("", {
+            const response = await fetch("http://192.168.40.149:8080/api/user/signup", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -40,9 +43,10 @@ const UserRegistration = () => {
             if (response.ok) {
                 alert("User registered successfully!");
                 setFormData({
-                    name: '',
+                    firstName: '',
+                    lastName: '',
+                    mobileNo: '',
                     email: '',
-                    phone: '',
                     password: '',
                     confirmPassword: ''
                 });
@@ -73,16 +77,40 @@ const UserRegistration = () => {
         <div className={styles.container}>
             <form className={styles.form} onSubmit={registerUser}>
                 <div className="mb-4">
-                    <label htmlFor="name" className={styles.label}>Full Name</label>
+                    <label htmlFor="firstName" className={styles.label}>First Name</label>
                     <input
-                        name="name"
+                        name="firstName"
                         type="text"
-                        placeholder="Enter Full Name"
+                        placeholder="Enter First Name"
                         className={styles.input}
-                        value={formData.name}
+                        value={formData.firstName}
                         onChange={handleChange}
                     />
-                    {errors.name && <p className={styles.error}>{errors.name}</p>}
+                    {errors.firstName && <p className={styles.error}>{errors.firstName}</p>}
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="lastName" className={styles.label}>Last Name</label>
+                    <input
+                        name="lastName"
+                        type="text"
+                        placeholder="Enter Last Name"
+                        className={styles.input}
+                        value={formData.lastName}
+                        onChange={handleChange}
+                    />
+                    {errors.lastName && <p className={styles.error}>{errors.lastName}</p>}
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="mobileNo" className={styles.label}>Mobile No</label>
+                    <input
+                        name="mobileNo"
+                        type="text"
+                        placeholder="Enter Mobile No"
+                        className={styles.input}
+                        value={formData.mobileNo}
+                        onChange={handleChange}
+                    />
+                    {errors.mobileNo && <p className={styles.error}>{errors.mobileNo}</p>}
                 </div>
                 <div className="mb-4">
                     <label htmlFor="email" className={styles.label}>Email</label>
@@ -95,18 +123,6 @@ const UserRegistration = () => {
                         onChange={handleChange}
                     />
                     {errors.email && <p className={styles.error}>{errors.email}</p>}
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="phone" className={styles.label}>Phone No</label>
-                    <input
-                        name="phone"
-                        type="text"
-                        placeholder="Enter Phone No"
-                        className={styles.input}
-                        value={formData.phone}
-                        onChange={handleChange}
-                    />
-                    {errors.phone && <p className={styles.error}>{errors.phone}</p>}
                 </div>
                 <div className="mb-6">
                     <label htmlFor="password" className={styles.label}>Password</label>
@@ -121,7 +137,7 @@ const UserRegistration = () => {
                     {errors.password && <p className={styles.error}>{errors.password}</p>}
                 </div>
                 <div className="mb-6">
-                    <label htmlFor="confirmPassword" className={styles.label}>Re Enter Password</label>
+                    <label htmlFor="confirmPassword" className={styles.label}>Confirm Password</label>
                     <input
                         name="confirmPassword"
                         type="password"
@@ -134,7 +150,7 @@ const UserRegistration = () => {
                 </div>
                 <button type="submit" className={styles.button}>Register</button>
                 <div className={styles.backToLogin}>
-                    <p>Already Have an account ? </p>
+                    <p>Already have an account?</p>
                     <Link to="/login" className="underline sm:mx-2">Login</Link>
                 </div>
             </form>
