@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-
+import { Link } from "react-router-dom";
 const Header = () => {
     const [isCardOpen, setIsCardOpen] = useState(false);
     const [registeredData, setRegisteredData] = useState({});
-
     useEffect(() => {
         setRegisteredData({}); // Fetch or initialize registered data here
     }, []);
-
+    
     const handleCard = () => {
         setIsCardOpen(!isCardOpen);
     };
-
+    
+    const username = registeredData.fullName;
+    
     const styles = {
         component: 'w-full h-24 bg-transparent border-2 rounded-lg flex justify-between items-center',
         userProfile: 'w-20 h-20 hover:cursor-pointer m-auto border-2 rounded-full',
@@ -21,7 +22,7 @@ const Header = () => {
         formItemHalf: 'w-full md:w-1/2 px-2',
         label: 'block text-gray-700 text-sm font-bold mb-2',
         input: 'w-full px-3 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 placeholder:italic placeholder:text-sm',
-        button: 'w-full bg-gray-500 text-white py-2 rounded-md hover:bg-red-300 transition duration-300 my-4',
+        button: 'w-full bg-gray-500 text-white py-2 rounded-md hover:bg-red-300 transition duration-300 my-4 flex flex-col items-center justify-center ',
         cancel: '-rotate-90 w-10 h-10'
     };
 
@@ -90,7 +91,9 @@ const Header = () => {
                                 <input type="text" name="serviceHours" placeholder="Enter service hours..." className={styles.input} value={registeredData.serviceHours || ''} readOnly />
                             </div>
                         </div>
-                        <button type="submit" className={styles.button}>Edit</button>
+                        <div className={styles.button}>
+                            <Link to={`/edit-garage/${username}`} className={styles.a}>Edit</Link>
+                        </div>
                     </div>
                 </div>
             )}
