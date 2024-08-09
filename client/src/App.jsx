@@ -7,13 +7,14 @@ import UserRegistration from './components/UserRegistration.jsx';
 import Home from './pages/Home.jsx';
 import { AuthProvider } from './components/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
+import LandingPage from './components/LandingPage.jsx';
 
 function App() {
   return (
     <AuthProvider>
       <div>
         <Routes>
-          <Route path="/" element={<Login/>} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
           <Route path="/garage-register" element={<ProtectedRoute element={<GarageRegister />} />} />

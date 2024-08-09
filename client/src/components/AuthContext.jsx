@@ -1,20 +1,24 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
 // src/AuthContext.jsx
 
 import { createContext, useState, useContext } from 'react';
 
-// Create a context for authentication
 const AuthContext = createContext();
-
-// Create a provider component
-// eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  const [userType , setUserType] = useState(null);
+  const login = (type) => {
+    setIsAuthenticated(true);
+    setUserType(type);
+  };
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUserType(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated,userType, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
