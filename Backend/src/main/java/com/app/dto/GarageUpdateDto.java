@@ -1,15 +1,13 @@
 package com.app.dto;
 
-import com.app.entities.Address;
 import com.app.entities.Services;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GarageSignUpDto {
+public class GarageUpdateDto {
 
 	private String ownerName;
 
@@ -27,8 +25,4 @@ public class GarageSignUpDto {
 
 	private int yrsOfOperation;
 
-	private String password;
-	
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	private String confirmPassword;
 }

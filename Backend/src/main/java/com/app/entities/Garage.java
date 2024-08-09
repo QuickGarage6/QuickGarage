@@ -12,10 +12,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.app.dto.AddressDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -77,10 +81,8 @@ public class Garage {
 	@Size(min = 6, message = "Password must be atleast 6 characters ")
 	private String password;
 	
-	@Column(length = 20)
-	@NotBlank(message = "Password is mandatory")
-	@NotNull
-	@Size(min = 6, message = "Password must be atleast 6 characters ")
+	@Transient
+	@JsonIgnore
 	private String confirmPassword;
 	
 }
