@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserSignInDto;
 import com.app.dto.UserSignUpDto;
 import com.app.entities.User;
+import com.app.entities.User;
 import com.app.service.UserServiceImpl;
-
 
 @RestController
 @RequestMapping("/api/user")
@@ -45,12 +46,11 @@ public class UserController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<User> signIn(@RequestBody UserSignInDto userSignInDto) {
-		Optional<User> userOptional= userService.signIn(userSignInDto.getUserName(), userSignInDto.getPassword());
+		Optional<User> userOptional = userService.signIn(userSignInDto.getUserName(), userSignInDto.getPassword());
 		if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            return ResponseEntity.ok(user); // Return user data with status 200 OK
-        } 
-	   else {
+			User user = userOptional.get();
+			return ResponseEntity.ok(user); // Return user data with status 200 OK
+		} else {
 			return ResponseEntity.status(401).build();
 		}
 	}
@@ -88,5 +88,19 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 
+	}
+
+	@PutMapping("/forget-password")
+	public ResponseEntity<User> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) {
+		try {
+
+			Optional<User> userOptional = userService.forgotPassword(forgotPasswordDto);
+
+			User user = userOptional.get();
+			return ResponseEntity.ok(user); // Return user data with status 200 OK
+
+		} catch (Exception e) {
+			return ResponseEntity.status(401).build();
+		}
 	}
 }

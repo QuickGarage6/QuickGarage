@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.dto.AddressDto;
+import com.app.dto.ForgotPasswordDto;
 import com.app.dto.GarageUpdateDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
@@ -149,5 +150,26 @@ public class GarageServiceImpl implements GarageService {
 
 		return message;
 
+	}
+
+	@Override
+	public Optional<Garage> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception {
+		Optional<Garage> garageOptional = garageRepository.findByEmail(forgotPasswordDto.getUsername());
+		//String message = "Details updated successfully";
+		if (!garageOptional.isPresent()) {
+			garageOptional = garageRepository.findByMobileNo(forgotPasswordDto.getUsername());
+			if (!garageOptional.isPresent())
+				throw new Exception("garage not found");
+		}
+		Garage garage = garageOptional.get();
+		if (!forgotPasswordDto.getNewPassword().equals(forgotPasswordDto.getConfirmPassword())) {
+			throw new Exception("Password is incorrect");
+		}
+		garage.setPassword(forgotPasswordDto.getNewPassword());
+		garageRepository.save(garage);
+		
+		
+		  return garageOptional;
+		
 	}
 }

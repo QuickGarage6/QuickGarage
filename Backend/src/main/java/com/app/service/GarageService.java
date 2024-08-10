@@ -2,6 +2,7 @@ package com.app.service;
 
 import java.util.Optional;
 
+import com.app.dto.ForgotPasswordDto;
 import com.app.dto.GarageUpdateDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Garage;
@@ -21,4 +22,7 @@ public interface GarageService {
 	public String updatePassword(String username, UpdatePasswordDto updatePasswordDto) throws Exception;
 
 	public String updateGarageDetails(String username, GarageUpdateDto garageUpdateDto) throws Exception;
+
+	public Optional<Garage> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception;
+
 }

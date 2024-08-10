@@ -7,7 +7,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
+import com.app.entities.User;
 import com.app.entities.User;
 import com.app.repository.UserRepository;
 
@@ -34,13 +36,13 @@ public class UserServiceImpl implements UserService {
 
 	public Optional<User> signIn(String username, String password) {
 		Optional<User> user = userRepository.findByEmail(username);
-		//String message = "User not found";
+		// String message = "User not found";
 		if (!user.isPresent()) {
 			user = userRepository.findByMobileNo(username);
 		}
 		if (user.isPresent() && password.equals(user.get().getPassword())) {
-			//message = "User login successful";
-			//return message;
+			// message = "User login successful";
+			// return message;
 			return user;
 		}
 		return Optional.empty();
@@ -85,5 +87,25 @@ public class UserServiceImpl implements UserService {
 
 		userRepository.deleteUser(username);
 		return message;
+	}
+
+	@Override
+	public Optional<User> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception {
+		Optional<User> userOptional = userRepository.findByEmail(forgotPasswordDto.getUsername());
+		// String message = "Details updated successfully";
+		if (!userOptional.isPresent()) {
+			userOptional = userRepository.findByMobileNo(forgotPasswordDto.getUsername());
+			if (!userOptional.isPresent())
+				throw new Exception("user not found");
+		}
+		User user = userOptional.get();
+		if (!forgotPasswordDto.getNewPassword().equals(forgotPasswordDto.getConfirmPassword())) {
+			throw new Exception("Password is incorrect");
+		}
+		user.setPassword(forgotPasswordDto.getNewPassword());
+		userRepository.save(user);
+
+		return userOptional;
+
 	}
 }
