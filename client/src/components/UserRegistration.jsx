@@ -11,13 +11,14 @@ const UserRegistration = () => {
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const validate = () => {
-        let formErrors = {};
-        if (!formData.firstName) formErrors.firstName = "First Name is required";
-        if (!formData.lastName) formErrors.lastName = "Last Name is required";
-        if (!formData.mobileNo) formErrors.mobileNo = "Mobile No is required";
-        if (!formData.email) formErrors.email = "Email is required";
+        const formErrors = {};
+        if (!formData.firstName.trim()) formErrors.firstName = "First Name is required";
+        if (!formData.lastName.trim()) formErrors.lastName = "Last Name is required";
+        if (!formData.mobileNo.trim()) formErrors.mobileNo = "Mobile No is required";
+        if (!formData.email.trim()) formErrors.email = "Email is required";
         if (!formData.password) formErrors.password = "Password is required";
         if (formData.password !== formData.confirmPassword) formErrors.confirmPassword = "Passwords do not match";
         return formErrors;
@@ -31,15 +32,18 @@ const UserRegistration = () => {
             return;
         }
         setErrors({});
+        setLoading(true);
 
         try {
-            const response = await fetch("http://192.168.40.149:8080/api/user/signup", {
+            const response = await fetch("http://localhost:8080/api/user/signup", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
+            setLoading(false);
+
             if (response.ok) {
                 alert("User registered successfully!");
                 setFormData({
@@ -51,10 +55,12 @@ const UserRegistration = () => {
                     confirmPassword: ''
                 });
             } else {
-                alert("Failed to register user.");
+                const data = await response.json();
+                alert(data.message || "Failed to register user.");
             }
         } catch (error) {
             console.error("Error:", error);
+            setLoading(false);
             alert("An error occurred while registering the user.");
         }
     };
@@ -70,85 +76,31 @@ const UserRegistration = () => {
         input: 'w-full px-3 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500',
         button: 'w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300',
         error: 'text-red-500 text-xs italic',
-        backToLogin: 'flex m-4 p-4 text-center flex justify-center items-center',
+        backToLogin: 'flex m-4 p-4 text-center justify-center items-center',
     };
 
     return (
         <div className={styles.container}>
             <form className={styles.form} onSubmit={registerUser}>
-                <div className="mb-4">
-                    <label htmlFor="firstName" className={styles.label}>First Name</label>
-                    <input
-                        name="firstName"
-                        type="text"
-                        placeholder="Enter First Name"
-                        className={styles.input}
-                        value={formData.firstName}
-                        onChange={handleChange}
-                    />
-                    {errors.firstName && <p className={styles.error}>{errors.firstName}</p>}
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="lastName" className={styles.label}>Last Name</label>
-                    <input
-                        name="lastName"
-                        type="text"
-                        placeholder="Enter Last Name"
-                        className={styles.input}
-                        value={formData.lastName}
-                        onChange={handleChange}
-                    />
-                    {errors.lastName && <p className={styles.error}>{errors.lastName}</p>}
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="mobileNo" className={styles.label}>Mobile No</label>
-                    <input
-                        name="mobileNo"
-                        type="text"
-                        placeholder="Enter Mobile No"
-                        className={styles.input}
-                        value={formData.mobileNo}
-                        onChange={handleChange}
-                    />
-                    {errors.mobileNo && <p className={styles.error}>{errors.mobileNo}</p>}
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="email" className={styles.label}>Email</label>
-                    <input
-                        name="email"
-                        type="email"
-                        placeholder="Enter Email"
-                        className={styles.input}
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                    {errors.email && <p className={styles.error}>{errors.email}</p>}
-                </div>
-                <div className="mb-6">
-                    <label htmlFor="password" className={styles.label}>Password</label>
-                    <input
-                        name="password"
-                        type="password"
-                        placeholder="Enter Your Password..."
-                        className={styles.input}
-                        value={formData.password}
-                        onChange={handleChange}
-                    />
-                    {errors.password && <p className={styles.error}>{errors.password}</p>}
-                </div>
-                <div className="mb-6">
-                    <label htmlFor="confirmPassword" className={styles.label}>Confirm Password</label>
-                    <input
-                        name="confirmPassword"
-                        type="password"
-                        placeholder="Confirm Your Password..."
-                        className={styles.input}
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                    />
-                    {errors.confirmPassword && <p className={styles.error}>{errors.confirmPassword}</p>}
-                </div>
-                <button type="submit" className={styles.button}>Register</button>
+                {['firstName', 'lastName', 'mobileNo', 'email', 'password', 'confirmPassword'].map((field, idx) => (
+                    <div className="mb-4" key={idx}>
+                        <label htmlFor={field} className={styles.label}>
+                            {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        </label>
+                        <input
+                            name={field}
+                            type={field.includes('password') ? 'password' : 'text'}
+                            placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
+                            className={styles.input}
+                            value={formData[field]}
+                            onChange={handleChange}
+                        />
+                        {errors[field] && <p className={styles.error}>{errors[field]}</p>}
+                    </div>
+                ))}
+                <button type="submit" className={styles.button} disabled={loading}>
+                    {loading ? "Registering..." : "Register"}
+                </button>
                 <div className={styles.backToLogin}>
                     <p>Already have an account?</p>
                     <Link to="/login" className="underline sm:mx-2">Login</Link>
