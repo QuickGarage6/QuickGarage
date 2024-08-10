@@ -10,7 +10,7 @@ public interface GarageService {
 
 	public Garage signUp(Garage garage) throws Exception;
 
-	public String signIn(String userName, String password);
+	public Optional<Garage> signIn(String userName, String password);
 
 	public Optional<Garage> getGarageByEmail(String email);
 

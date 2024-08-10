@@ -79,10 +79,16 @@ public class Garage {
 	@NotBlank(message = "Password is mandatory")
 	@NotNull
 	@Size(min = 6, message = "Password must be atleast 6 characters ")
+	@JsonIgnore
 	private String password;
 	
 	@Transient
 	@JsonIgnore
 	private String confirmPassword;
 	
+	@NotNull
+	private double longitude;
+
+	@NotNull
+	private double latitude;
 }

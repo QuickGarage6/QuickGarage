@@ -32,17 +32,18 @@ public class UserServiceImpl implements UserService {
 		return userRepository.save(user);
 	}
 
-	public String signIn(String email, String password) {
-		Optional<User> user = userRepository.findByEmail(email);
-		String message = "User not found";
+	public Optional<User> signIn(String username, String password) {
+		Optional<User> user = userRepository.findByEmail(username);
+		//String message = "User not found";
 		if (!user.isPresent()) {
-			user = userRepository.findByMobileNo(email);
+			user = userRepository.findByMobileNo(username);
 		}
 		if (user.isPresent() && password.equals(user.get().getPassword())) {
-			message = "User login successful";
-			return message;
+			//message = "User login successful";
+			//return message;
+			return user;
 		}
-		return message;
+		return Optional.empty();
 	}
 
 	public Optional<User> getUserByEmail(String email) {

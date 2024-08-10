@@ -1,9 +1,12 @@
 package com.app.controller;
 
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +23,9 @@ import com.app.dto.GarageUpdateDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
 import com.app.entities.Garage;
+import com.app.entities.User;
 import com.app.service.GarageServiceImpl;
+
 
 @RestController
 @RequestMapping("/api/garage")
@@ -31,6 +36,7 @@ public class GarageController {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	
 	@PostMapping("/signup")
 	public ResponseEntity<Garage> signUp(@RequestBody GarageSignUpDto garageSignUpDto) throws Exception {
 
@@ -47,12 +53,14 @@ public class GarageController {
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<String> signIn(@RequestBody GarageSignInDto garageSignInDto) {
-		String message = garageService.signIn(garageSignInDto.getUserName(), garageSignInDto.getPassword());
-		if (message.equals("Garage login successful")) {
-			return ResponseEntity.ok(message);
-		} else {
-			return ResponseEntity.status(401).body(message);
+	public ResponseEntity<Garage> signIn(@RequestBody GarageSignInDto garageSignInDto) {
+		Optional<Garage> garageOptional = garageService.signIn(garageSignInDto.getUserName(), garageSignInDto.getPassword());
+		if (garageOptional.isPresent()) {
+            Garage garage = garageOptional.get();
+            return ResponseEntity.ok(garage); // Return user data with status 200 OK
+        } 
+	   else {
+			return ResponseEntity.status(401).build();
 		}
 	}
 
@@ -84,19 +92,20 @@ public class GarageController {
 			@RequestBody UpdatePasswordDto updatePasswordDto) {
 		try {
 
-			String message=garageService.updatePassword(username, updatePasswordDto);
+			String message = garageService.updatePassword(username, updatePasswordDto);
 			return ResponseEntity.ok(message);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 	}
+
 	@PutMapping("/{username}/update-garage")
 	public ResponseEntity<String> updateGarageDetails(@PathVariable String username,
 			@RequestBody GarageUpdateDto garageUpdateDto) {
 		System.out.println("Received GarageUpdateDto: " + garageUpdateDto);
 		try {
 
-			String message=garageService.updateGarageDetails(username, garageUpdateDto);
+			String message = garageService.updateGarageDetails(username, garageUpdateDto);
 			return ResponseEntity.ok(message);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

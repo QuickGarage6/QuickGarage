@@ -35,17 +35,17 @@ public class GarageServiceImpl implements GarageService {
 		return garageRepository.save(garage);
 	}
 
-	public String signIn(String garageName, String password) {
+	public Optional<Garage> signIn(String garageName, String password) {
 		Optional<Garage> garage = garageRepository.findByEmail(garageName);
-		String message = "garage not found";
+		//String message = "garage not found";
 		if (!garage.isPresent()) {
 			garage = garageRepository.findByMobileNo(garageName);
 		}
 		if (garage.isPresent() && password.equals(garage.get().getPassword())) {
-			message = "garage login successful";
-			return message;
+			//message = "garage login successful";
+			return garage;
 		}
-		return message;
+		return Optional.empty();
 	}
 
 	public Optional<Garage> getGarageByEmail(String email) {

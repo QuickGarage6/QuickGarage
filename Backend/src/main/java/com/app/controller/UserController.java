@@ -1,5 +1,7 @@
 package com.app.controller;
 
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import com.app.dto.UserSignInDto;
 import com.app.dto.UserSignUpDto;
 import com.app.entities.User;
 import com.app.service.UserServiceImpl;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -41,12 +44,14 @@ public class UserController {
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<String> signIn(@RequestBody UserSignInDto userSignInDto) {
-		String message = userService.signIn(userSignInDto.getUserName(), userSignInDto.getPassword());
-		if (message.equals("User login successful")) {
-			return ResponseEntity.ok(message);
-		} else {
-			return ResponseEntity.status(401).body(message);
+	public ResponseEntity<User> signIn(@RequestBody UserSignInDto userSignInDto) {
+		Optional<User> userOptional= userService.signIn(userSignInDto.getUserName(), userSignInDto.getPassword());
+		if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return ResponseEntity.ok(user); // Return user data with status 200 OK
+        } 
+	   else {
+			return ResponseEntity.status(401).build();
 		}
 	}
 

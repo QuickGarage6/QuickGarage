@@ -13,8 +13,11 @@ public class UserSignUpDto {
 	private String lastName;
 	private String mobileNo;
 	private String email;
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String confirmPassword;
+	private double longitude;
+	private double latitude;
 
 }

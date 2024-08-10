@@ -49,6 +49,7 @@ public class User {
 	@NotBlank(message = "Password is mandatory")
 	@NotNull
 	@Size(min = 6, message = "Password must be atleast 6 characters ")
+	@JsonIgnore
 	private String password;
 	
 	@Transient

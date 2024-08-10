@@ -9,7 +9,7 @@ public interface UserService {
 
 	public User signUp(User user) throws Exception;
 
-	public String signIn(String userName, String password);
+	public Optional<User> signIn(String userName, String password);
 
 	public Optional<User> getUserByEmail(String email);
 

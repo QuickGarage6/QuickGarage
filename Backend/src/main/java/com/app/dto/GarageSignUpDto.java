@@ -26,9 +26,16 @@ public class GarageSignUpDto {
 	private int licenseNumber;
 
 	private int yrsOfOperation;
-
+    
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
-	
+
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String confirmPassword;
+	
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private double longitude;
+	
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private double latitude;
 }
