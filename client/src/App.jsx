@@ -8,7 +8,6 @@ import Home from './pages/Home.jsx';
 import { AuthProvider } from './components/AuthContext.jsx';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage.jsx';
-import EditGarage from './components/EditGarage';
 
 function App() {
   return (
@@ -18,9 +17,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
-          <Route path="/edit-garage/:username" element={<ProtectedRoute element={<EditGarage />} />} />
-          <Route path="/garage-register" element={<ProtectedRoute element={<GarageRegister />} />} />
-          <Route path="/user-register" element={<ProtectedRoute element={<UserRegistration />} />} />
+          <Route path="/garage-register" element={<GarageRegister />} />
+          <Route path="/user-register" element = {<UserRegistration/>} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </div>
