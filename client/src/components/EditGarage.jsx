@@ -1,7 +1,7 @@
 import { Link , useParams} from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import React from 'react'
+
 
 const EditGarage = () => {
     const { username } = useParams();
@@ -24,8 +24,10 @@ const EditGarage = () => {
         garageName: '',
         mobileNo: '',
         email: '',
+        latitude:'',
+        longitude:'',
         serviceType: '',
-        addressDto: {
+        address: {
             streetAddress: '',
             city: '',
             state: '',
@@ -34,8 +36,6 @@ const EditGarage = () => {
         },
         licenseNumber: '',
         yrsOfOperation: '',
-        password: '',
-        confirmPassword: ''
     });
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
@@ -45,11 +45,11 @@ const EditGarage = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name in formData.addressDto) {
+        if (name in formData.address) {
             setFormData(prevData => ({
                 ...prevData,
-                addressDto: {
-                    ...prevData.addressDto,
+                address: {
+                    ...prevData.address,
                     [name]: value
                 }
             }));
@@ -63,7 +63,26 @@ const EditGarage = () => {
             validateForm();
         }
     };
-
+    const fetchData = async() => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/garage/email?email=${encodeURIComponent(username)}`, {
+                ...formData,
+                latitude,
+                longitude
+            });
+            const data = response.data;
+            setFormData(data);
+            setMessageType('success');
+            setMessage('');
+        } catch (error) {
+            console.error("Error:", error);
+            setMessageType('error');
+            setMessage(error.response?.data?.message || 'An error occurred while registering.');
+        }
+    }
+    useEffect(()=>{
+        fetchData();
+    },[]);
     const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const validateMobileNo = (mobileNo) => /^\d{10}$/.test(mobileNo);
 
@@ -100,24 +119,14 @@ const EditGarage = () => {
         if (!validateForm()) {
             return;
         }
-        console.log("in handle submit");
 
         try {
-            console.log("Form Data:", formData);
-            console.log("Latitude:", latitude);
-            console.log("Longitude:", longitude);
-                ///http://192.168.40.149:8080/api/garage/{username}/update-garage
-            const response = await axios.post(`http://192.168.40.149:8080/api/garage/${username}/update-garage`, {
+            const response = await axios.put(`http://localhost:8080/api/garage/${username}/update-garage`, {
                 ...formData,
                 latitude,
                 longitude
             });
-
-            console.log("Response Status:", response.status); 
-            console.log("Response Data:", response.data);
-
-            setMessageType('success');
-            setMessage('Registration successful!');
+            setMessage(response.data);
         } catch (error) {
             console.error("Error:", error);
             setMessageType('error');
@@ -202,29 +211,29 @@ const EditGarage = () => {
                     </div>
                     <div className={styles.formItem}>
                         <label htmlFor="streetAddress" className={styles.label}>Street Address</label>
-                        <input type="text" name="streetAddress" placeholder="Enter street address..." className={`${styles.input} ${errors.streetAddress ? 'border-red-500' : ''}`} value={formData.addressDto.streetAddress} onChange={handleChange} />
+                        <input type="text" name="streetAddress" placeholder="Enter street address..." className={`${styles.input} ${errors.streetAddress ? 'border-red-500' : ''}`} value={formData.address.streetAddress} onChange={handleChange} />
                         {errors.streetAddress && <p className="text-red-500 text-xs">{errors.streetAddress}</p>}
                     </div>                    <div className="flex flex-wrap -mx-2">
                         <div className={styles.formItemHalf}>
                             <label htmlFor="city" className={styles.label}>City</label>
-                            <input type="text" name="city" placeholder="Enter city..." className={`${styles.input} ${errors.city ? 'border-red-500' : ''}`} value={formData.addressDto.city} onChange={handleChange} />
+                            <input type="text" name="city" placeholder="Enter city..." className={`${styles.input} ${errors.city ? 'border-red-500' : ''}`} value={formData.address.city} onChange={handleChange} />
                             {errors.city && <p className="text-red-500 text-xs">{errors.city}</p>}
                         </div>
                         <div className={styles.formItemHalf}>
                             <label htmlFor="state" className={styles.label}>State/Province</label>
-                            <input type="text" name="state" placeholder="Enter state or province..." className={`${styles.input} ${errors.state ? 'border-red-500' : ''}`} value={formData.addressDto.state} onChange={handleChange} />
+                            <input type="text" name="state" placeholder="Enter state or province..." className={`${styles.input} ${errors.state ? 'border-red-500' : ''}`} value={formData.address.state} onChange={handleChange} />
                             {errors.state && <p className="text-red-500 text-xs">{errors.state}</p>}
                         </div>
                     </div>
                     <div className="flex flex-wrap -mx-2">
                         <div className={styles.formItemHalf}>
                             <label htmlFor="zipCode" className={styles.label}>Zip Code</label>
-                            <input type="text" name="zipCode" placeholder="Enter zip code..." className={`${styles.input} ${errors.zipCode ? 'border-red-500' : ''}`} value={formData.addressDto.zipCode} onChange={handleChange} />
+                            <input type="text" name="zipCode" placeholder="Enter zip code..." className={`${styles.input} ${errors.zipCode ? 'border-red-500' : ''}`} value={formData.address.zipCode} onChange={handleChange} />
                             {errors.zipCode && <p className="text-red-500 text-xs">{errors.zipCode}</p>}
                         </div>
                         <div className={styles.formItemHalf}>
                             <label htmlFor="country" className={styles.label}>Country</label>
-                            <input type="text" name="country" placeholder="Enter country..." className={`${styles.input} ${errors.country ? 'border-red-500' : ''}`} value={formData.addressDto.country} onChange={handleChange} />
+                            <input type="text" name="country" placeholder="Enter country..." className={`${styles.input} ${errors.country ? 'border-red-500' : ''}`} value={formData.address.country} onChange={handleChange} />
                             {errors.country && <p className="text-red-500 text-xs">{errors.country}</p>}
                         </div>
                     </div>
@@ -238,18 +247,6 @@ const EditGarage = () => {
                             <label htmlFor="yrsOfOperation" className={styles.label}>Years of Operation</label>
                             <input type="text" name="yrsOfOperation" placeholder="Enter years of operation..." className={`${styles.input} ${errors.yrsOfOperation ? 'border-red-500' : ''}`} value={formData.yrsOfOperation} onChange={handleChange} />
                             {errors.yrsOfOperation && <p className="text-red-500 text-xs">{errors.yrsOfOperation}</p>}
-                        </div>
-                        <div className={styles.formItemHalf}>
-                            <label htmlFor="password" className={styles.label}>Password</label>
-                            <input type="password" name="password" placeholder="Enter password..." className={`${styles.input} ${errors.password ? 'border-red-500' : ''}`} value={formData.password} onChange={handleChange} />
-                            {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap -mx-2">
-                        <div className={styles.formItemHalf}>
-                            <label htmlFor="confirmPassword" className={styles.label}>Confirm Password</label>
-                            <input type="password" name="confirmPassword" placeholder="Confirm password..." className={`${styles.input} ${errors.confirmPassword ? 'border-red-500' : ''}`} value={formData.confirmPassword} onChange={handleChange} />
-                            {errors.confirmPassword && <p className="text-red-500 text-xs">{errors.confirmPassword}</p>}
                         </div>
                     </div>
                     <button type="button" onClick={getLocation} className={styles.button}>Get Location</button>
