@@ -1,7 +1,8 @@
 import { Link , useParams} from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useState } from "react";
+import axios from "axios";
 
 const EditGarage = () => {
     const { username } = useParams();
@@ -119,7 +120,6 @@ const EditGarage = () => {
         if (!validateForm()) {
             return;
         }
-
         try {
             const response = await axios.put(`http://localhost:8080/api/garage/${username}/update-garage`, {
                 ...formData,
@@ -248,6 +248,7 @@ const EditGarage = () => {
                             <input type="text" name="yrsOfOperation" placeholder="Enter years of operation..." className={`${styles.input} ${errors.yrsOfOperation ? 'border-red-500' : ''}`} value={formData.yrsOfOperation} onChange={handleChange} />
                             {errors.yrsOfOperation && <p className="text-red-500 text-xs">{errors.yrsOfOperation}</p>}
                         </div>
+
                     </div>
                     <button type="button" onClick={getLocation} className={styles.button}>Get Location</button>
                     <div className="sr-only">

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
-
 const Header = () => {
     const navigate = useNavigate();
     const [isCardOpen, setIsCardOpen] = useState(false);
@@ -13,12 +12,10 @@ const Header = () => {
         { id: 2, message: "New customer review received.", time: "1 hour ago" },
         { id: 3, message: "Service appointment scheduled for tomorrow.", time: "3 hours ago" }
     ];
-
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('userData'));
         setUser(userData);
     }, []);
-
     const handleCardToggle = () => setIsCardOpen((prev) => !prev);
     const handleNotificationToggle = () => setIsNotificationOpen((prev) => !prev);
 
@@ -34,7 +31,9 @@ const Header = () => {
             console.error('Login error:', error);
         }
     };
-
+    
+    const username = registeredData.fullName;
+    
     const styles = {
         container: 'w-full h-16 sm:h-24 bg-white border-b-2 border-gray-200 shadow-md flex justify-between items-center px-4 sm:px-6',
         profileImage: 'w-10 h-10 sm:w-14 sm:h-14 cursor-pointer border-2 border-gray-300 rounded-full flex items-center justify-center overflow-hidden transition-transform transform hover:scale-110',
@@ -145,6 +144,7 @@ const Header = () => {
                             <button onClick={handleDelete} className={styles.button}>
                                 Delete
                             </button>
+
                         </div>
                     </div>
                 </div>
