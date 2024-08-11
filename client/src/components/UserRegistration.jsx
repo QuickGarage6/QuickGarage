@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 const UserRegistration = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -54,6 +55,7 @@ const UserRegistration = () => {
                     password: '',
                     confirmPassword: ''
                 });
+                navigate('/login');
             } else {
                 const data = await response.json();
                 alert(data.message || "Failed to register user.");
@@ -70,22 +72,52 @@ const UserRegistration = () => {
     };
 
     const styles = {
-        container: 'min-h-screen flex items-center justify-center bg-gray-100 p-4',
-        form: 'bg-white p-8 rounded shadow-md w-full max-w-sm',
-        label: 'block text-gray-700 text-sm font-bold mb-2',
-        input: 'w-full px-3 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500',
+        container: 'min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4',
+        form: 'bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative overflow-hidden',
+        label: 'block text-gray-700 text-sm font-semibold mb-2',
+        input: 'w-full px-4 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300',
         button: 'w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300',
-        error: 'text-red-500 text-xs italic',
-        backToLogin: 'flex m-4 p-4 text-center justify-center items-center',
+        error: 'text-red-500 text-xs italic mt-1',
+        backToLogin: 'flex flex-col items-center mt-4',
+        link: 'text-blue-500 hover:underline',
+        backgroundPattern: 'absolute inset-0 w-full h-full bg-opacity-10',
+        animatedCircles: 'absolute top-0 left-0 w-full h-full pointer-events-none'
     };
 
     return (
         <div className={styles.container}>
-            <form className={styles.form} onSubmit={registerUser}>
+            <div className={styles.backgroundPattern}>
+                <div className={styles.animatedCircles}>
+                    <svg className="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                        <circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.2)">
+                            <animate attributeName="r" from="40" to="100" dur="15s" repeatCount="indefinite" />
+                            <animate attributeName="opacity" from="0.3" to="0" dur="15s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="150" cy="150" r="40" fill="rgba(255,255,255,0.2)">
+                            <animate attributeName="r" from="40" to="100" dur="15s" repeatCount="indefinite" begin="7s"/>
+                            <animate attributeName="opacity" from="0.3" to="0" dur="15s" repeatCount="indefinite" begin="7s"/>
+                        </circle>
+                    </svg>
+                </div>
+            </div>
+            <motion.form
+                className={styles.form}
+                onSubmit={registerUser}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
                 {['firstName', 'lastName', 'mobileNo', 'email', 'password', 'confirmPassword'].map((field, idx) => (
-                    <div className="mb-4" key={idx}>
+                    <motion.div
+                        className="mb-4"
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: idx * 0.1 }}
+                    >
                         <label htmlFor={field} className={styles.label}>
                             {field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                            {field !== 'mobileNo' && field !== 'confirmPassword' && <span className="text-red-500">*</span>}
                         </label>
                         <input
                             name={field}
@@ -96,16 +128,22 @@ const UserRegistration = () => {
                             onChange={handleChange}
                         />
                         {errors[field] && <p className={styles.error}>{errors[field]}</p>}
-                    </div>
+                    </motion.div>
                 ))}
-                <button type="submit" className={styles.button} disabled={loading}>
+                <motion.button
+                    type="submit"
+                    className={styles.button}
+                    disabled={loading}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
                     {loading ? "Registering..." : "Register"}
-                </button>
+                </motion.button>
                 <div className={styles.backToLogin}>
-                    <p>Already have an account?</p>
-                    <Link to="/login" className="underline sm:mx-2">Login</Link>
+                    <p className="text-gray-700">Already have an account?</p>
+                    <Link to="/login" className={styles.link}>Login</Link>
                 </div>
-            </form>
+            </motion.form>
         </div>
     );
 };
