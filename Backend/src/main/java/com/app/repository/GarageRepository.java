@@ -1,5 +1,6 @@
 package com.app.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -17,9 +18,11 @@ public interface GarageRepository extends JpaRepository<Garage, Long> {
 	Optional<Garage> findByEmail(String email);
 
 	Optional<Garage> findByMobileNo(String mobileNo);
-     
+
 	@Modifying
 	@Transactional
 	@Query("Delete from Garage u where u.email=:username OR u.mobileNo=:username")
-	void deleteGarage(String username) ;
+	void deleteGarage(String username);
+
+	
 }

@@ -17,7 +17,6 @@ public class UserSignUpDto {
 	private String password;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String confirmPassword;
-	private double longitude;
-	private double latitude;
+	
 
 }

@@ -1,14 +1,19 @@
 package com.app.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.dto.AddressDto;
 import com.app.dto.ForgotPasswordDto;
+import com.app.dto.GarageDetailsForUserDto;
+import com.app.dto.GarageDto;
 import com.app.dto.GarageUpdateDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
@@ -21,6 +26,9 @@ public class GarageServiceImpl implements GarageService {
 
 	@Autowired
 	private GarageRepository garageRepository;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 
 	public Garage signUp(Garage garage) throws Exception {
 		if (garageRepository.findByEmail(garage.getEmail()).isPresent()) {
@@ -38,12 +46,12 @@ public class GarageServiceImpl implements GarageService {
 
 	public Optional<Garage> signIn(String garageName, String password) {
 		Optional<Garage> garage = garageRepository.findByEmail(garageName);
-		//String message = "garage not found";
+		// String message = "garage not found";
 		if (!garage.isPresent()) {
 			garage = garageRepository.findByMobileNo(garageName);
 		}
 		if (garage.isPresent() && password.equals(garage.get().getPassword())) {
-			//message = "garage login successful";
+			// message = "garage login successful";
 			return garage;
 		}
 		return Optional.empty();
@@ -155,7 +163,7 @@ public class GarageServiceImpl implements GarageService {
 	@Override
 	public Optional<Garage> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception {
 		Optional<Garage> garageOptional = garageRepository.findByEmail(forgotPasswordDto.getUsername());
-		//String message = "Details updated successfully";
+		// String message = "Details updated successfully";
 		if (!garageOptional.isPresent()) {
 			garageOptional = garageRepository.findByMobileNo(forgotPasswordDto.getUsername());
 			if (!garageOptional.isPresent())
@@ -167,9 +175,22 @@ public class GarageServiceImpl implements GarageService {
 		}
 		garage.setPassword(forgotPasswordDto.getNewPassword());
 		garageRepository.save(garage);
-		
-		
-		  return garageOptional;
-		
+
+		return garageOptional;
+
+	}
+
+	@Override
+	public List<GarageDto> getAllGarages() {
+		List<Garage> garages = garageRepository.findAll();
+		return garages.stream().map(garage -> modelMapper.map(garage, GarageDto.class)).collect(Collectors.toList());
+
+	}
+	
+	@Override
+	public List<GarageDetailsForUserDto> getAllGaragesForUser() {
+		List<Garage> garages = garageRepository.findAll();
+		return garages.stream().map(garage -> modelMapper.map(garage, GarageDetailsForUserDto.class)).collect(Collectors.toList());
+
 	}
 }
