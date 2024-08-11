@@ -208,6 +208,7 @@ const GarageRegister = () => {
                         <FormInput name="city" placeholder="Enter city..." value={formData.addressDto.city} onChange={handleChange} error={errors.city} required />
                         <FormInput name="state" placeholder="Enter state or province..." value={formData.addressDto.state} onChange={handleChange} error={errors.state} required />
                     </div>
+                    <FormInput name="licenseNumber" placeholder="Enter license number..." value={formData.licenseNumber} onChange={handleChange} error={errors.licenseNumber} />
                     <div className="flex flex-wrap -mx-2">
                         <FormInput name="zipCode" placeholder="Enter zip code..." value={formData.addressDto.zipCode} onChange={handleChange} error={errors.zipCode} required />
                         <FormInput name="country" placeholder="Enter country..." value={formData.addressDto.country} onChange={handleChange} error={errors.country} required />

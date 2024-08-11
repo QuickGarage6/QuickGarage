@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 import { motion } from 'framer-motion';
-
 const Login = () => {
     const navigate = useNavigate();
     const { login, userType } = useAuth();
@@ -53,7 +52,6 @@ const Login = () => {
     const handleUserTypeChange = (type) => {
         setSelectedUserType(type);
     };
-
     const handlePasswordReset = async (event) => {
         event.preventDefault();
         if (newPassword !== confirmPassword) {
