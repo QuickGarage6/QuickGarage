@@ -1,15 +1,19 @@
 package com.app.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
-import com.app.entities.User;
+import com.app.dto.UserDto;
+import com.app.entities.Garage;
 import com.app.entities.User;
 import com.app.repository.UserRepository;
 
@@ -19,6 +23,10 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	
+	@Autowired
+	private ModelMapper modelMapper;
 
 	public User signUp(User user) throws Exception {
 		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -108,4 +116,14 @@ public class UserServiceImpl implements UserService {
 		return userOptional;
 
 	}
+
+	@Override
+	public List<UserDto> getAllUsers() {
+		List<User> users = userRepository.findAll();
+		return users.stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
+	}
+	
+	
+	
+	
 }

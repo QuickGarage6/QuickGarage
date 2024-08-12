@@ -1,9 +1,11 @@
 package com.app.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
+import com.app.dto.UserDto;
 import com.app.entities.Garage;
 import com.app.entities.User;
 
@@ -22,4 +24,8 @@ public interface UserService {
 	public String deleteUser(String username) throws Exception;
 
 	public Optional<User> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception;
+	
+	List<UserDto> getAllUsers();
+	
+	
 }

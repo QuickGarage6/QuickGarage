@@ -9,15 +9,13 @@ import lombok.Setter;
 @Setter
 public class UserSignUpDto {
 
-	private String firstName;
-	private String lastName;
+	private String name;
 	private String mobileNo;
 	private String email;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String confirmPassword;
-	private double longitude;
-	private double latitude;
+	
 
 }

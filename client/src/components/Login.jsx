@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 import { motion } from 'framer-motion';
-
 const Login = () => {
     const navigate = useNavigate();
     const { login, userType } = useAuth();
@@ -44,7 +43,6 @@ const Login = () => {
             setErrorMessage('An error occurred while logging in.');
         }
     };
-
 
     const handlePasswordReset = async (event) => {
         event.preventDefault();

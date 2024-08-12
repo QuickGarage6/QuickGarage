@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.dto.ForgotPasswordDto;
+import com.app.dto.GarageDetailsForUserDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserSignInDto;
 import com.app.dto.UserSignUpDto;
+import com.app.entities.Garage;
 import com.app.entities.User;
-import com.app.entities.User;
+import com.app.service.GarageServiceImpl;
 import com.app.service.UserServiceImpl;
 
 @RestController
@@ -32,7 +35,12 @@ public class UserController {
 	private UserServiceImpl userService;
 
 	@Autowired
+	private GarageServiceImpl garageService;
+
+	@Autowired
 	private ModelMapper modelMapper;
+
+	
 
 	@PostMapping("/signup")
 	public ResponseEntity<User> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
@@ -103,4 +111,11 @@ public class UserController {
 			return ResponseEntity.status(401).build();
 		}
 	}
+
+	@GetMapping("/garages")
+	public List<GarageDetailsForUserDto> getAllGaragesForUser() {
+		return garageService.getAllGaragesForUser();
+	}
+	
+
 }

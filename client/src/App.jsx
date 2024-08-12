@@ -13,7 +13,6 @@ import EditGarage from './components/EditGarage.jsx';
 import Header from './components/UserHeader.jsx';
 import Footer from './components/Footer.jsx';
 import MainPage from './components/MainPage.jsx'
-
 function App() {
   return (
     <AuthProvider>
@@ -33,6 +32,7 @@ function App() {
         <Footer />
       </div>
     </AuthProvider>
+    
   );
 }
 
