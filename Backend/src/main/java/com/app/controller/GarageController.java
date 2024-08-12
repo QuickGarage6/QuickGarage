@@ -131,6 +131,7 @@ public class GarageController {
 		}
 	}
 
+
 	@GetMapping("/nearby")
 	public List<Garage> getNearbyGarages(@RequestParam double latitude, @RequestParam double longitude,
 			@RequestParam(defaultValue = "5") double radiusInKm) {
@@ -143,4 +144,13 @@ public class GarageController {
 	}
 	
 	 
+
+	
+//	@GetMapping("/nearby")
+//    public List<Garage> getNearbyGarages(@RequestParam double latitude,
+//                                         @RequestParam double longitude,
+//                                         @RequestParam(defaultValue = "5") double radiusInKm) {
+//        return garageService.getNearbyGarages(latitude, longitude, radiusInKm);
+//    }
+
 }
