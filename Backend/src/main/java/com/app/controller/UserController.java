@@ -32,12 +32,14 @@ public class UserController {
 
 	@Autowired
 	private UserServiceImpl userService;
+
 	@Autowired
-	
 	private GarageServiceImpl garageService;
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+	
 
 	@PostMapping("/signup")
 	public ResponseEntity<User> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
@@ -108,9 +110,12 @@ public class UserController {
 			return ResponseEntity.status(401).build();
 		}
 	}
-	
+
 	@GetMapping("/garages")
 	public List<GarageDetailsForUserDto> getAllGaragesForUser() {
 		return garageService.getAllGaragesForUser();
 	}
+	
+	 
+
 }

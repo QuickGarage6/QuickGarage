@@ -193,4 +193,11 @@ public class GarageServiceImpl implements GarageService {
 		return garages.stream().map(garage -> modelMapper.map(garage, GarageDetailsForUserDto.class)).collect(Collectors.toList());
 
 	}
+	
+	public List<Garage> getNearbyGarages(double latitude, double longitude, double radiusInKm) {
+        double radiusInMeters = radiusInKm * 1000; // Convert radius to meters
+        return garageRepository.findNearbyGarages(latitude, longitude, radiusInMeters);
+    }
+	
+	
 }

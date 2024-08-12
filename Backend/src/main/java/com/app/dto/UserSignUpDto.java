@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 public class UserSignUpDto {
 
-	private String firstName;
-	private String lastName;
+	private String name;
 	private String mobileNo;
 	private String email;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

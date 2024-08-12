@@ -30,14 +30,11 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(length = 30)
+	@Column(length = 40)
 	@NotNull
 	@NotBlank(message = "First Name is mandatory")
-	private String firstName;
-	@Column(length = 30)
-	@NotNull
-	@NotBlank(message = "Last Name is mandatory")
-	private String lastName;
+	private String name;
+	
 	@Column(length = 15)
 	@NotBlank(message = "Mobile number is mandatory")
 	@Size(min = 10, max = 10, message = "Mobile number must be 10 digits")

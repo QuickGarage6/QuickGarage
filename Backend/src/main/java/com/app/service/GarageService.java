@@ -31,5 +31,7 @@ public interface GarageService {
 	List<GarageDto> getAllGarages();
 
 	List<GarageDetailsForUserDto> getAllGaragesForUser();
+	
+	public List<Garage> getNearbyGarages(double latitude, double longitude, double radiusInKm);
 
 }

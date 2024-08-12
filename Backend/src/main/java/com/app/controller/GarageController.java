@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -20,10 +21,12 @@ import com.app.dto.ForgotPasswordDto;
 import com.app.dto.GarageSignInDto;
 import com.app.dto.GarageSignUpDto;
 import com.app.dto.GarageUpdateDto;
+import com.app.dto.InteractionDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
 import com.app.entities.Garage;
 import com.app.service.GarageServiceImpl;
+import com.app.service.InteractionService;
 
 @RestController
 @RequestMapping("/api/garage")
@@ -32,7 +35,12 @@ public class GarageController {
 	private GarageServiceImpl garageService;
 
 	@Autowired
+	private InteractionService interactionService;
+
+	@Autowired
 	private ModelMapper modelMapper;
+
+	
 
 	@PostMapping("/signup")
 	public ResponseEntity<Garage> signUp(@RequestBody GarageSignUpDto garageSignUpDto) throws Exception {
@@ -122,4 +130,17 @@ public class GarageController {
 			return ResponseEntity.status(401).build();
 		}
 	}
+
+	@GetMapping("/nearby")
+	public List<Garage> getNearbyGarages(@RequestParam double latitude, @RequestParam double longitude,
+			@RequestParam(defaultValue = "5") double radiusInKm) {
+		return garageService.getNearbyGarages(latitude, longitude, radiusInKm);
+	}
+
+	@GetMapping("/{garageId}/interactions")
+	public List<InteractionDto> getGarageInteractions(@PathVariable Long garageId) {
+		return interactionService.getInteractionsForGarage(garageId);
+	}
+	
+	 
 }
