@@ -22,6 +22,7 @@ import com.app.dto.GarageDetailsForUserDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserSignInDto;
 import com.app.dto.UserSignUpDto;
+import com.app.entities.Garage;
 import com.app.entities.User;
 import com.app.service.GarageServiceImpl;
 import com.app.service.UserServiceImpl;
@@ -113,4 +114,6 @@ public class UserController {
 	public List<GarageDetailsForUserDto> getAllGaragesForUser() {
 		return garageService.getAllGaragesForUser();
 	}
+	
+	
 }

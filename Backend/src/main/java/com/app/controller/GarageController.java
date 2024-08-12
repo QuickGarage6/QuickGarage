@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -122,4 +123,11 @@ public class GarageController {
 			return ResponseEntity.status(401).build();
 		}
 	}
+	
+	@GetMapping("/nearby")
+    public List<Garage> getNearbyGarages(@RequestParam double latitude,
+                                         @RequestParam double longitude,
+                                         @RequestParam(defaultValue = "5") double radiusInKm) {
+        return garageService.getNearbyGarages(latitude, longitude, radiusInKm);
+    }
 }
