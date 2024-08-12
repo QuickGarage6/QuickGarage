@@ -1,7 +1,7 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate,Link } from 'react-router-dom';
-import FormInput from './FormInput'; // Import the FormInput component
+import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const GarageRegister = () => {
     const navigate = useNavigate();
@@ -181,53 +181,86 @@ const GarageRegister = () => {
     };
 
     const styles = {
-        container: 'min-h-screen flex items-center justify-center bg-gray-100 p-4 py-48',
-        form: 'bg-white p-8 rounded-lg shadow-lg w-full max-w-sm md:max-w-md lg:max-w-lg',
-        title: 'text-xl md:text-2xl lg:text-3xl uppercase font-bold text-center mx-8 my-4',
-        button: 'w-full bg-gray-500 text-white py-2 rounded-md hover:bg-red-300 transition duration-300 my-4',
+        container: 'min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 p-6 pt-24 relative',
+        form: 'bg-white p-8 rounded-lg shadow-lg w-full max-w-md z-10',
+        title: 'text-2xl font-bold mb-4 text-center text-gray-900',
+        label: 'block text-gray-900 text-sm font-semibold mb-2',
+        input: 'w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300',
+        button: 'w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300',
         error: 'text-red-500 text-xs italic mt-1',
         message: 'text-center py-2 my-2 rounded',
         success: 'bg-green-100 text-green-600 border border-green-300',
-        link: 'text-gray-700 hover:text-gray-900 text-lg'
+        link: 'text-blue-500 hover:underline',
+        backgroundPattern: 'absolute inset-0 w-full h-full bg-opacity-30',
+        animatedCircles: 'absolute top-0 left-0 w-full h-full pointer-events-none'
     };
 
     return (
         <div className={styles.container}>
-            <div className={styles.form}>
-                <h1 className={styles.title}>Garage Register</h1>
+            <div className={styles.backgroundPattern}>
+                <div className={styles.animatedCircles}>
+                    <svg className="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                        <circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.2)">
+                            <animate attributeName="r" from="40" to="100" dur="15s" repeatCount="indefinite" />
+                            <animate attributeName="opacity" from="0.3" to="0" dur="15s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="150" cy="150" r="40" fill="rgba(255,255,255,0.2)">
+                            <animate attributeName="r" from="40" to="100" dur="15s" repeatCount="indefinite" begin="7s"/>
+                            <animate attributeName="opacity" from="0.3" to="0" dur="15s" repeatCount="indefinite" begin="7s"/>
+                        </circle>
+                    </svg>
+                </div>
+            </div>
+            <motion.div
+                className={styles.form}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <h1 className={styles.title}>Garage Registration</h1>
                 <form onSubmit={handleSubmit}>
-                    <FormInput name="ownerName" placeholder="Enter name..." value={formData.ownerName} onChange={handleChange} error={errors.ownerName} required />
-                    <FormInput name="garageName" placeholder="Enter Garage name..." value={formData.garageName} onChange={handleChange} error={errors.garageName} required />
-                    <div className="flex flex-wrap -mx-2">
-                        <FormInput name="mobileNo" placeholder="Enter mobile number..." value={formData.mobileNo} onChange={handleChange} error={errors.mobileNo} required />
-                        <FormInput name="serviceType" placeholder="Enter service type..." value={formData.serviceType} onChange={handleChange} />
+                    {['ownerName', 'garageName', 'mobileNo', 'email', 'serviceType', 'streetAddress', 'city', 'state', 'country', 'zipCode', 'licenseNumber', 'yrsOfOperation', 'password', 'confirmPassword'].map((field, idx) => (
+                        <motion.div
+                            className="mb-4"
+                            key={idx}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.1 }}
+                        >
+                            <label htmlFor={field} className={styles.label}>
+                                {field.replace(/([A-Z])/g, ' $1').toUpperCase()}
+                            </label>
+                            <input
+                                type={field.includes('password') ? 'password' : 'text'}
+                                name={field}
+                                id={field}
+                                className={styles.input}
+                                value={formData[field]}
+                                onChange={handleChange}
+                            />
+                            {errors[field] && <p className={styles.error}>{errors[field]}</p>}
+                        </motion.div>
+                    ))}
+                    <div className="flex gap-4 mb-4">
+                        <button type="button" className={styles.button} onClick={getLocation}>
+                            Get Location
+                        </button>
                     </div>
-                    <FormInput name="email" type="email" placeholder="Enter email address..." value={formData.email} onChange={handleChange} error={errors.email} required />
-                    <FormInput name="streetAddress" placeholder="Enter street address..." value={formData.addressDto.streetAddress} onChange={handleChange} error={errors.streetAddress} required />
-                    <div className="flex flex-wrap -mx-2">
-                        <FormInput name="city" placeholder="Enter city..." value={formData.addressDto.city} onChange={handleChange} error={errors.city} required />
-                        <FormInput name="state" placeholder="Enter state or province..." value={formData.addressDto.state} onChange={handleChange} error={errors.state} required />
-                    </div>
-                    <div className="flex flex-wrap -mx-2">
-                        <FormInput name="zipCode" placeholder="Enter zip code..." value={formData.addressDto.zipCode} onChange={handleChange} error={errors.zipCode} required />
-                        <FormInput name="country" placeholder="Enter country..." value={formData.addressDto.country} onChange={handleChange} error={errors.country} required />
-                    </div>
-                    <FormInput name="licenseNumber" placeholder="Enter license number..." value={formData.licenseNumber} onChange={handleChange} error={errors.licenseNumber} required />
-                    <FormInput name="yrsOfOperation" placeholder="Enter years of operation..." value={formData.yrsOfOperation} onChange={handleChange} error={errors.yrsOfOperation} required />
-                    <FormInput name="password" type="password" placeholder="Enter password..." value={formData.password} onChange={handleChange} error={errors.password} required />
-                    <FormInput name="confirmPassword" type="password" placeholder="Confirm password..." value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} required />
-                    <button type="submit" className={styles.button}>Register</button>
-                    <button onClick={getLocation} className={styles.button}>Get Location</button>
                     {message && (
                         <div className={`${styles.message} ${messageType === 'success' ? styles.success : 'bg-red-100 text-red-600 border border-red-300'}`}>
                             {message}
                         </div>
                     )}
-                    <p className="text-center mt-4">
-                        Already have an account? <Link to="/login" className={styles.link}>Login here</Link>
-                    </p>
+                    <button type="submit" className={styles.button}>
+                        Register Garage
+                    </button>
                 </form>
-            </div>
+                <div className="mt-4 text-center">
+                    <Link to="/login" className={styles.link}>
+                        Already have an account? Login
+                    </Link>
+                </div>
+            </motion.div>
         </div>
     );
 };

@@ -4,7 +4,6 @@ import Login from './components/Login.jsx';
 import ErrorPage from './pages/ErrorPage.jsx';
 import GarageRegister from './components/GarageRegister.jsx';
 import UserRegistration from './components/UserRegistration.jsx';
-import Home from './pages/Home.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import ContactUs from './pages/ContactUs.jsx';
 import { AuthProvider } from './components/AuthContext.jsx';
@@ -13,6 +12,7 @@ import LandingPage from './components/LandingPage.jsx';
 import EditGarage from './components/EditGarage.jsx';
 import Header from './components/UserHeader.jsx';
 import Footer from './components/Footer.jsx';
+import MainPage from './components/MainPage.jsx'
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="about" element={<AboutUs />} />
+          <Route path="main" element={<MainPage />} />
           <Route path="contact" element={<ContactUs />} />
           <Route path="user-register" element={<UserRegistration />} />
           <Route path="garage-register" element={<GarageRegister />} />

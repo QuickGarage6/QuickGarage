@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,13 +8,11 @@ import { motion } from 'framer-motion';
 const Login = () => {
     const navigate = useNavigate();
     const { login, userType } = useAuth();
-    const [selectedUserType, setSelectedUserType] = useState(userType);
+    const [selectedUserType] = useState(userType);
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [errorMessageReset, setErrorMessageReset] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const [successMessageReset, setSuccessMessageReset] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [resetEmail, setResetEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -38,9 +35,7 @@ const Login = () => {
                 setSuccessMessage('Login successful!');
                 localStorage.setItem('userData', JSON.stringify(response.data));
                 login(selectedUserType);
-                if (selectedUserType === 'garage') {
-                    navigate('/home');
-                }
+                navigate(selectedUserType === 'garage' ? '/home' : '/main');
             } else {
                 setErrorMessage(response.data.message || 'Login failed.');
             }
@@ -50,14 +45,11 @@ const Login = () => {
         }
     };
 
-    const handleUserTypeChange = (type) => {
-        setSelectedUserType(type);
-    };
 
     const handlePasswordReset = async (event) => {
         event.preventDefault();
         if (newPassword !== confirmPassword) {
-            setErrorMessageReset('Passwords do not match.');
+            setErrorMessage('Passwords do not match.');
             return;
         }
         const url = selectedUserType === 'garage'
@@ -67,34 +59,33 @@ const Login = () => {
         try {
             await axios.put(url, {
                 newPassword: newPassword.trim(),
-                confirmPassword: confirmPassword.trim(),
                 username: resetEmail,
             });
-            setSuccessMessageReset('Password has been reset successfully.');
+            setSuccessMessage('Password has been reset successfully.');
             setShowModal(false);
         } catch (error) {
             console.error('Password reset error:', error);
-            setErrorMessageReset('An error occurred while resetting the password.');
+            setErrorMessage('An error occurred while resetting the password.');
         }
     };
 
     const styles = {
-        container: 'relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-r from-gray-700 via-gray-800 to-gray-900',
-        form: 'bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative z-10',
+        container: 'relative min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-300 via-blue-500 to-blue-600 overflow-hidden',
+        form: 'bg-white p-8 rounded-lg shadow-xl w-full max-w-md relative z-10',
         label: 'block text-gray-800 text-sm font-medium mb-2',
-        input: 'w-full px-4 py-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 placeholder-gray-400 transition-transform transform focus:scale-105',
-        button: 'w-full bg-gray-600 text-white py-3 rounded-md hover:bg-gray-700 transition duration-300 transform hover:scale-105',
+        input: 'w-full px-4 py-3 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 transition-transform transform focus:scale-105',
+        button: 'w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-300 transform hover:scale-105',
         register: 'mt-4 text-center',
-        a: 'text-blue-600 hover:text-blue-800 transition-colors duration-300 underline',
+        a: 'text-blue-500 hover:text-blue-700 transition-colors duration-300 underline',
         message: 'text-center my-4',
         errorMessage: 'text-red-600 font-medium',
         successMessage: 'text-green-600 font-medium',
         forgotPasswordLink: 'text-gray-500 hover:text-gray-700 transition-colors duration-300 underline',
         modal: 'fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 z-50',
-        modalContent: 'bg-white p-8 rounded-lg shadow-lg w-full max-w-md transform transition-transform duration-300 scale-95 hover:scale-100 z-60',
+        modalContent: 'bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-transform duration-300 scale-95 hover:scale-100 z-60',
         modalButton: 'w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-300 transform hover:scale-105 my-4',
         cancelButton: 'w-full bg-gray-300 text-gray-800 py-3 rounded-md hover:bg-gray-400 transition duration-300 transform hover:scale-105',
-        backgroundCircle: 'absolute w-64 h-64 bg-gradient-to-r from-gray-500 to-gray-800 rounded-full opacity-50 animate-pulse',
+        backgroundCircle: 'absolute w-64 h-64 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full opacity-50 animate-pulse',
         backgroundCircle1: 'top-10 right-10',
         backgroundCircle2: 'bottom-20 left-20',
         backgroundCircle3: 'bottom-10 right-20'
@@ -188,8 +179,9 @@ const Login = () => {
                                 <label htmlFor="resetEmail" className={styles.label}>Email</label>
                                 <input
                                     id="resetEmail"
+                                    name="resetEmail"
                                     type="email"
-                                    placeholder="Enter your email"
+                                    placeholder="Enter Your Email"
                                     className={styles.input}
                                     value={resetEmail}
                                     onChange={(e) => setResetEmail(e.target.value)}
@@ -201,7 +193,7 @@ const Login = () => {
                                 <input
                                     id="newPassword"
                                     type="password"
-                                    placeholder="Enter new password"
+                                    placeholder="Enter New Password"
                                     className={styles.input}
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
@@ -213,17 +205,17 @@ const Login = () => {
                                 <input
                                     id="confirmPassword"
                                     type="password"
-                                    placeholder="Confirm new password"
+                                    placeholder="Confirm New Password"
                                     className={styles.input}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
                                 />
                             </div>
+                            {errorMessage && <div className={`${styles.message} ${styles.errorMessage}`}>{errorMessage}</div>}
+                            {successMessage && <div className={`${styles.message} ${styles.successMessage}`}>{successMessage}</div>}
                             <button type="submit" className={styles.modalButton}>Reset Password</button>
-                            <button type="button" onClick={() => setShowModal(false)} className={styles.cancelButton}>Cancel</button>
-                            {errorMessageReset && <div className={`${styles.message} ${styles.errorMessage}`}>{errorMessageReset}</div>}
-                            {successMessageReset && <div className={`${styles.message} ${styles.successMessage}`}>{successMessageReset}</div>}
+                            <button type="button" className={styles.cancelButton} onClick={() => setShowModal(false)}>Cancel</button>
                         </form>
                     </motion.div>
                 </div>

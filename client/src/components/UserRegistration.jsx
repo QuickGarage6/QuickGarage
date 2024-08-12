@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 const UserRegistration = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        name:'',
         mobileNo: '',
         email: '',
         password: '',
@@ -17,8 +16,7 @@ const UserRegistration = () => {
 
     const validate = () => {
         const formErrors = {};
-        if (!formData.firstName.trim()) formErrors.firstName = "First Name is required";
-        if (!formData.lastName.trim()) formErrors.lastName = "Last Name is required";
+        if (!formData.name.trim()) formErrors.name = "Name is required";
         if (!formData.mobileNo.trim()) formErrors.mobileNo = "Mobile No is required";
         if (!formData.email.trim()) formErrors.email = "Email is required";
         if (!formData.password) formErrors.password = "Password is required";
@@ -49,8 +47,7 @@ const UserRegistration = () => {
             if (response.ok) {
                 alert("User registered successfully!");
                 setFormData({
-                    firstName: '',
-                    lastName: '',
+                    name:'',
                     mobileNo: '',
                     email: '',
                     password: '',
@@ -73,15 +70,15 @@ const UserRegistration = () => {
     };
 
     const styles = {
-        container: 'min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4',
-        form: 'bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative overflow-hidden',
-        label: 'block text-gray-700 text-sm font-semibold mb-2',
-        input: 'w-full px-4 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300',
+        container: 'min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 p-6 pt-24 relative',
+        form: 'bg-white p-8 rounded-lg shadow-lg w-full max-w-md z-10',
+        label: 'block text-gray-900 text-sm font-semibold mb-2',
+        input: 'w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300',
         button: 'w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300',
         error: 'text-red-500 text-xs italic mt-1',
         backToLogin: 'flex flex-col items-center mt-4',
         link: 'text-blue-500 hover:underline',
-        backgroundPattern: 'absolute inset-0 w-full h-full bg-opacity-10',
+        backgroundPattern: 'absolute inset-0 w-full h-full bg-opacity-30',
         animatedCircles: 'absolute top-0 left-0 w-full h-full pointer-events-none'
     };
 
@@ -108,7 +105,7 @@ const UserRegistration = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                {['firstName', 'lastName', 'mobileNo', 'email', 'password', 'confirmPassword'].map((field, idx) => (
+                {['name', 'mobileNo', 'email', 'password', 'confirmPassword'].map((field, idx) => (
                     <motion.div
                         className="mb-4"
                         key={idx}
@@ -141,7 +138,7 @@ const UserRegistration = () => {
                     {loading ? "Registering..." : "Register"}
                 </motion.button>
                 <div className={styles.backToLogin}>
-                    <p className="text-gray-700">Already have an account?</p>
+                    <p className="text-gray-900">Already have an account?</p>
                     <Link to="/login" className={styles.link}>Login</Link>
                 </div>
             </motion.form>
