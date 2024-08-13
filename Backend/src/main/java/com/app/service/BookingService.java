@@ -31,6 +31,7 @@ public class BookingService {
         // Create and save notification for the garage owner
         Notification notification = new Notification();
         notification.setGarageId(bookingDTO.getGarageId());
+        notification.setUserId(bookingDTO.getUserId());
         notification.setMessage("New booking request from user ID " + bookingDTO.getUserId());
         notification.setCreatedDate(LocalDateTime.now());
         notification.setRead(false);

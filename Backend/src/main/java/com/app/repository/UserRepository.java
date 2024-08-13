@@ -38,3 +38,5 @@ List<Garage> findNearbyGarages(@Param("latitude") double latitude,
                             @Param("radius") double radius);
 
 }
+
+

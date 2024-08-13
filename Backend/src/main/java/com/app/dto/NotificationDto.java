@@ -2,6 +2,8 @@ package com.app.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,12 +12,16 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class NotificationDto {
-	 private Long id;
-	    private Long garageId;
-	    private String message;
-	    private LocalDateTime createdDate;
-	    private boolean isRead;
-	    private boolean isBookingConfirmationRequested;
-    
-    public NotificationDto() {}
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private Long id;
+	
+	private Long garageId;
+	private Long userId;
+	private String message;
+	private LocalDateTime createdDate;
+	private boolean isRead;
+	private boolean isBookingConfirmationRequested;
+
+	public NotificationDto() {
+	}
 }

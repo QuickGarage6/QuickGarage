@@ -22,8 +22,8 @@ public class NotificationController {
         return notificationService.createNotification(notificationDTO);
     }
 
-    @GetMapping("/{id}")
-    public NotificationDto getNotification(@PathVariable Long id) {
-        return notificationService.getNotification(id);
-    }
+//    @GetMapping("/{id}")
+//    public NotificationDto getNotification(@PathVariable Long id) {
+//        return notificationService.getNotification(id);
+//    }
 }

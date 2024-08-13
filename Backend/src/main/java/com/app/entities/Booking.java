@@ -29,7 +29,7 @@ public class Booking {
 	private Long userId;
 	private Long garageId;
 	private LocalDateTime bookingDateTime;
-	private boolean isConfirmed;
+	private boolean isConfirmed=false;
 
 	@ManyToOne
 	@JoinColumn(name = "userId", insertable = false, updatable = false)

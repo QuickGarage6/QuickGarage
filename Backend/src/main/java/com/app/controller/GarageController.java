@@ -23,11 +23,13 @@ import com.app.dto.GarageSignInDto;
 import com.app.dto.GarageSignUpDto;
 import com.app.dto.GarageUpdateDto;
 import com.app.dto.InteractionDto;
+import com.app.dto.NotificationDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
 import com.app.entities.Garage;
 import com.app.service.GarageServiceImpl;
 import com.app.service.InteractionService;
+import com.app.service.NotificationService;
 
 @RestController
 @RequestMapping("/api/garage")
@@ -37,6 +39,9 @@ public class GarageController {
 
 	@Autowired
 	private InteractionService interactionService;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -128,7 +133,6 @@ public class GarageController {
 			Garage garage = garageOptional.get();
 			ApiResponse<Garage> response = new ApiResponse<>(HttpStatus.OK, "Password updated successfully", garage);
 			return ResponseEntity.ok(response);
-			
 
 		} catch (Exception e) {
 			return ResponseEntity.status(401).body(new ApiResponse(HttpStatus.UNAUTHORIZED, "Please try again"));
@@ -136,9 +140,9 @@ public class GarageController {
 	}
 
 	@GetMapping("/nearby")
-	public ResponseEntity<ApiResponse<List<Garage>>> getNearbyGarages(@RequestParam double latitude, @RequestParam double longitude,
-			@RequestParam(defaultValue = "5") double radiusInKm) {
-		List<Garage>garages =garageService.getNearbyGarages(latitude, longitude, radiusInKm);
+	public ResponseEntity<ApiResponse<List<Garage>>> getNearbyGarages(@RequestParam double latitude,
+			@RequestParam double longitude, @RequestParam(defaultValue = "5") double radiusInKm) {
+		List<Garage> garages = garageService.getNearbyGarages(latitude, longitude, radiusInKm);
 		ApiResponse<List<Garage>> response = new ApiResponse<>(HttpStatus.OK, "List displayed successfully", garages);
 		return ResponseEntity.ok(response);
 	}
@@ -147,6 +151,17 @@ public class GarageController {
 	public List<InteractionDto> getGarageInteractions(@PathVariable Long garageId) {
 		return interactionService.getInteractionsForGarage(garageId);
 	}
+
+	@GetMapping("/{garageId}/notification")
+  public List<NotificationDto> getNotification(@PathVariable Long garageId) {
+      return notificationService.getNotifications(garageId);
+  }
+	
+//	@GetMapping
+//	public ResponseEntity<List<Notification>> getNotifications(@PathVariable Long garageId) {
+//		List<Notification> notifications = notificationService.getNotificationsForGarage(garageId);
+//		return ResponseEntity.ok(notifications);
+//	}
 
 //	@GetMapping("/nearby")
 //    public List<Garage> getNearbyGarages(@RequestParam double latitude,
