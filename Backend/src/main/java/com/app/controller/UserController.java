@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.ApiResponse;
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.GarageDetailsForUserDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserSignInDto;
 import com.app.dto.UserSignUpDto;
-import com.app.entities.Garage;
 import com.app.entities.User;
 import com.app.service.GarageServiceImpl;
 import com.app.service.UserServiceImpl;
@@ -43,23 +43,25 @@ public class UserController {
 	
 
 	@PostMapping("/signup")
-	public ResponseEntity<User> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
+	public ResponseEntity<ApiResponse<User>> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
 
 		// Convert DTO to Entity
 		User user = modelMapper.map(userSignUpDto, User.class);
 
 		User newUser = userService.signUp(user);
-		return ResponseEntity.ok(newUser);
+		ApiResponse<User> response = new ApiResponse<>(HttpStatus.OK, "User Registered successfully", newUser);
+        return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<User> signIn(@RequestBody UserSignInDto userSignInDto) {
+	public ResponseEntity<ApiResponse<User>> signIn(@RequestBody UserSignInDto userSignInDto) {
 		Optional<User> userOptional = userService.signIn(userSignInDto.getUserName(), userSignInDto.getPassword());
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
-			return ResponseEntity.ok(user); // Return user data with status 200 OK
+			ApiResponse<User> response = new ApiResponse<>(HttpStatus.OK, "User signIn successfully", user);
+			return ResponseEntity.ok(response); // Return user data with status 200 OK
 		} else {
-			return ResponseEntity.status(401).build();
+			return ResponseEntity.status(401).body(new ApiResponse(HttpStatus.UNAUTHORIZED, "User login failed"));
 		}
 	}
 
@@ -99,16 +101,17 @@ public class UserController {
 	}
 
 	@PutMapping("/forget-password")
-	public ResponseEntity<User> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) {
+	public ResponseEntity<ApiResponse<User>> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) {
 		try {
 
 			Optional<User> userOptional = userService.forgotPassword(forgotPasswordDto);
 
 			User user = userOptional.get();
-			return ResponseEntity.ok(user); // Return user data with status 200 OK
+			ApiResponse<User> response = new ApiResponse<>(HttpStatus.OK, "Password updated successfully", user);
+			return ResponseEntity.ok(response);
 
 		} catch (Exception e) {
-			return ResponseEntity.status(401).build();
+			return ResponseEntity.status(401).body(new ApiResponse(HttpStatus.UNAUTHORIZED, "Please try again"));
 		}
 	}
 

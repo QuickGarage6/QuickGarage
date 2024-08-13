@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.ApiResponse;
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.GarageSignInDto;
 import com.app.dto.GarageSignUpDto;
@@ -40,10 +41,8 @@ public class GarageController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	
-
 	@PostMapping("/signup")
-	public ResponseEntity<Garage> signUp(@RequestBody GarageSignUpDto garageSignUpDto) throws Exception {
+	public ResponseEntity<ApiResponse<Garage>> signUp(@RequestBody GarageSignUpDto garageSignUpDto) throws Exception {
 
 		// Convert DTO to Entity
 		Garage garage = modelMapper.map(garageSignUpDto, Garage.class);
@@ -53,19 +52,22 @@ public class GarageController {
 		}
 
 		Garage newGarage = garageService.signUp(garage);
-		return ResponseEntity.ok(newGarage);
+		ApiResponse<Garage> response = new ApiResponse<>(HttpStatus.OK, "Garage signed up successfully", newGarage);
+		return ResponseEntity.ok(response);
 
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<Garage> signIn(@RequestBody GarageSignInDto garageSignInDto) {
+	public ResponseEntity<ApiResponse<Garage>> signIn(@RequestBody GarageSignInDto garageSignInDto) {
 		Optional<Garage> garageOptional = garageService.signIn(garageSignInDto.getUserName(),
 				garageSignInDto.getPassword());
 		if (garageOptional.isPresent()) {
 			Garage garage = garageOptional.get();
-			return ResponseEntity.ok(garage); // Return user data with status 200 OK
+			ApiResponse<Garage> response = new ApiResponse<>(HttpStatus.OK, "Garage signIn successful", garage);
+			return ResponseEntity.ok(response); // Return user data with status 200 OK
+
 		} else {
-			return ResponseEntity.status(401).build();
+			return ResponseEntity.status(401).body(new ApiResponse(HttpStatus.UNAUTHORIZED, "Garage login failed"));
 		}
 	}
 
@@ -118,34 +120,34 @@ public class GarageController {
 	}
 
 	@PutMapping("/forget-password")
-	public ResponseEntity<Garage> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) {
+	public ResponseEntity<ApiResponse<Garage>> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) {
 		try {
 
 			Optional<Garage> garageOptional = garageService.forgotPassword(forgotPasswordDto);
 
 			Garage garage = garageOptional.get();
-			return ResponseEntity.ok(garage); // Return user data with status 200 OK
+			ApiResponse<Garage> response = new ApiResponse<>(HttpStatus.OK, "Password updated successfully", garage);
+			return ResponseEntity.ok(response);
+			
 
 		} catch (Exception e) {
-			return ResponseEntity.status(401).build();
+			return ResponseEntity.status(401).body(new ApiResponse(HttpStatus.UNAUTHORIZED, "Please try again"));
 		}
 	}
 
-
 	@GetMapping("/nearby")
-	public List<Garage> getNearbyGarages(@RequestParam double latitude, @RequestParam double longitude,
+	public ResponseEntity<ApiResponse<List<Garage>>> getNearbyGarages(@RequestParam double latitude, @RequestParam double longitude,
 			@RequestParam(defaultValue = "5") double radiusInKm) {
-		return garageService.getNearbyGarages(latitude, longitude, radiusInKm);
+		List<Garage>garages =garageService.getNearbyGarages(latitude, longitude, radiusInKm);
+		ApiResponse<List<Garage>> response = new ApiResponse<>(HttpStatus.OK, "List displayed successfully", garages);
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/{garageId}/interactions")
 	public List<InteractionDto> getGarageInteractions(@PathVariable Long garageId) {
 		return interactionService.getInteractionsForGarage(garageId);
 	}
-	
-	 
 
-	
 //	@GetMapping("/nearby")
 //    public List<Garage> getNearbyGarages(@RequestParam double latitude,
 //                                         @RequestParam double longitude,

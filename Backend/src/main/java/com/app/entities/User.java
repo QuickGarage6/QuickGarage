@@ -52,5 +52,5 @@ public class User {
 	@Transient
 	@JsonIgnore
 	private String confirmPassword;
-
+	
 }

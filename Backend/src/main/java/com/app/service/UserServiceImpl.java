@@ -23,8 +23,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
 
@@ -122,8 +121,13 @@ public class UserServiceImpl implements UserService {
 		List<User> users = userRepository.findAll();
 		return users.stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
 	}
-	
-	
-	
-	
+
+	public void deleteUserById(Long id) throws Exception {
+		if (userRepository.existsById(id)) {
+			userRepository.deleteById(id);
+		} else {
+			throw new Exception("User not found with id: " + id);
+		}
+	}
+
 }

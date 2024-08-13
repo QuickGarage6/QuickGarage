@@ -199,5 +199,11 @@ public class GarageServiceImpl implements GarageService {
         return garageRepository.findNearbyGarages(latitude, longitude, radiusInMeters);
     }
 	
-	
+	 public void deleteGarageById(Long id) throws Exception {
+	        if (garageRepository.existsById(id)) {
+	            garageRepository.deleteById(id);
+	        } else {
+	            throw new Exception("Garage not found with id: " + id);
+	        }
+	    }
 }

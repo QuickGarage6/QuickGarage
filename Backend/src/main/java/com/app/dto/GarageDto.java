@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GarageDto {
+	private Long id;
+	
 	private String ownerName;
 
 	private String garageName;
@@ -24,7 +26,7 @@ public class GarageDto {
 	private int licenseNumber;
 
 	private int yrsOfOperation;
-	
+
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private double longitude;
 

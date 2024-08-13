@@ -6,7 +6,6 @@ import java.util.Optional;
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserDto;
-import com.app.entities.Garage;
 import com.app.entities.User;
 
 public interface UserService {
@@ -25,7 +24,9 @@ public interface UserService {
 
 	public Optional<User> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception;
 	
-	List<UserDto> getAllUsers();
+	public List<UserDto> getAllUsers();
+	
+	public void deleteUserById(Long id) throws Exception;
 	
 	
 }

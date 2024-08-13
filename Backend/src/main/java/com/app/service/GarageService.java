@@ -28,10 +28,12 @@ public interface GarageService {
 
 	public Optional<Garage> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception;
 
-	List<GarageDto> getAllGarages();
+	public List<GarageDto> getAllGarages();
 
-	List<GarageDetailsForUserDto> getAllGaragesForUser();
+	public List<GarageDetailsForUserDto> getAllGaragesForUser();
 	
 	public List<Garage> getNearbyGarages(double latitude, double longitude, double radiusInKm);
+	
+	public void deleteGarageById(Long id) throws Exception;
 
 }
