@@ -1,6 +1,6 @@
 package com.app.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class BookingService {
         Booking booking = new Booking(
             bookingDTO.getUserId(),
             bookingDTO.getGarageId(),
-            bookingDTO.getBookingDateTime()
+            bookingDTO.getBookingDate()
         );
         booking = bookingRepository.save(booking);
         
@@ -33,7 +33,7 @@ public class BookingService {
         notification.setGarageId(bookingDTO.getGarageId());
         notification.setUserId(bookingDTO.getUserId());
         notification.setMessage("New booking request from user ID " + bookingDTO.getUserId());
-        notification.setCreatedDate(LocalDateTime.now());
+        notification.setCreatedDate(LocalDate.now());
         notification.setRead(false);
         notification.setBookingConfirmationRequested(true);
         notificationRepository.save(notification);
@@ -56,7 +56,7 @@ public class BookingService {
             notification.setBookingConfirmationRequested(false);
             notificationRepository.save(notification);
         }
-
-        return new BookingDto(booking.getId(), booking.getUserId(), booking.getGarageId(), booking.getBookingDateTime(), booking.isConfirmed());
+        
+        return new BookingDto(booking.getId(), booking.getUserId(), booking.getGarageId(), booking.getBookingDate(),true);
     }
 }

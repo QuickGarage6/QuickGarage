@@ -1,5 +1,6 @@
 package com.app.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
@@ -9,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +31,8 @@ public class Booking {
 
 	private Long userId;
 	private Long garageId;
-	private LocalDateTime bookingDateTime;
+	@JsonIgnore
+	private LocalDate bookingDate;
 	private boolean isConfirmed=false;
 
 	@ManyToOne
@@ -39,10 +43,10 @@ public class Booking {
 	@JoinColumn(name = "garageId", insertable = false, updatable = false)
 	private Garage garage;
 
-	public Booking(Long userId, Long garageId, LocalDateTime bookingDateTime) {
+	public Booking(Long userId, Long garageId, LocalDate bookingDate) {
 		this.userId = userId;
 		this.garageId = garageId;
-		this.bookingDateTime = bookingDateTime;
+		this.bookingDate = bookingDate.now();
 	}
 	
 }

@@ -1,6 +1,6 @@
 package com.app.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,7 +18,7 @@ public class NotificationDto {
 	private Long garageId;
 	private Long userId;
 	private String message;
-	private LocalDateTime createdDate;
+	private LocalDate createdDate;
 	private boolean isRead;
 	private boolean isBookingConfirmationRequested;
 

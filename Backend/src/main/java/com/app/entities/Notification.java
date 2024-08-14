@@ -1,6 +1,6 @@
 package com.app.entities;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +27,7 @@ public class Notification {
 	private Long garageId;
 	private Long userId;
 	private String message;
-	private LocalDateTime createdDate;
+	private LocalDate createdDate;
 	private boolean isRead;
 	private boolean isBookingConfirmationRequested;
 	
