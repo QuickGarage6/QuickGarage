@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.dto.AddressDto;
@@ -29,6 +30,9 @@ public class GarageServiceImpl implements GarageService {
 	
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	public Garage signUp(Garage garage) throws Exception {
 		if (garageRepository.findByEmail(garage.getEmail()).isPresent()) {
@@ -41,6 +45,7 @@ public class GarageServiceImpl implements GarageService {
 		if (!garage.getConfirmPassword().equals(garage.getPassword())) {
 			throw new Exception("Password do not match");
 		}
+		garage.setPassword(passwordEncoder.encode(garage.getPassword()));
 		return garageRepository.save(garage);
 	}
 
@@ -50,8 +55,8 @@ public class GarageServiceImpl implements GarageService {
 		if (!garage.isPresent()) {
 			garage = garageRepository.findByMobileNo(garageName);
 		}
-		if (garage.isPresent() && password.equals(garage.get().getPassword())) {
-			// message = "garage login successful";
+		//if (garage.isPresent() && password.equals(garage.get().getPassword())) {
+		if (garage.isPresent() && passwordEncoder.matches(password, garage.get().getPassword())) {
 			return garage;
 		}
 		return Optional.empty();
@@ -89,11 +94,12 @@ public class GarageServiceImpl implements GarageService {
 				throw new Exception("garage not found");
 		}
 
-		if (!updatePasswordDto.getCurrentPassword().equals(garage.getPassword())) {
+		if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), garage.getPassword())) {
 			throw new Exception("Current password is incorrect");
 		}
 
-		garage.setPassword(updatePasswordDto.getNewPassword());
+		//garage.setPassword(updatePasswordDto.getNewPassword());
+		garage.setPassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
 		garageRepository.save(garage);
 
 		return message;
@@ -173,7 +179,9 @@ public class GarageServiceImpl implements GarageService {
 		if (!forgotPasswordDto.getNewPassword().equals(forgotPasswordDto.getConfirmPassword())) {
 			throw new Exception("Password is incorrect");
 		}
-		garage.setPassword(forgotPasswordDto.getNewPassword());
+		//garage.setPassword(forgotPasswordDto.getNewPassword());
+		garage.setPassword(passwordEncoder.encode(forgotPasswordDto.getNewPassword()));
+
 		garageRepository.save(garage);
 
 		return garageOptional;

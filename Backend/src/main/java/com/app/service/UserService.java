@@ -16,6 +16,8 @@ public interface UserService {
 
 	public Optional<User> getUserByEmail(String email);
 
+	public Optional<User> getUserById(Long id);
+
 	public Optional<User> getUserByMobile(String mobile);
 
 	public String updatePassword(String username, UpdatePasswordDto updatePasswordDto) throws Exception;
@@ -23,10 +25,9 @@ public interface UserService {
 	public String deleteUser(String username) throws Exception;
 
 	public Optional<User> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception;
-	
+
 	public List<UserDto> getAllUsers();
-	
+
 	public void deleteUserById(Long id) throws Exception;
-	
-	
+
 }

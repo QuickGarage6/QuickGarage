@@ -8,12 +8,12 @@ import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserDto;
-import com.app.entities.Garage;
 import com.app.entities.User;
 import com.app.repository.UserRepository;
 
@@ -27,6 +27,9 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	public User signUp(User user) throws Exception {
 		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
 			throw new Exception("Email already in use");
@@ -38,18 +41,18 @@ public class UserServiceImpl implements UserService {
 		if (!user.getConfirmPassword().equals(user.getPassword())) {
 			throw new Exception("Password do not match");
 		}
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
 		return userRepository.save(user);
 	}
 
 	public Optional<User> signIn(String username, String password) {
 		Optional<User> user = userRepository.findByEmail(username);
-		// String message = "User not found";
 		if (!user.isPresent()) {
 			user = userRepository.findByMobileNo(username);
 		}
-		if (user.isPresent() && password.equals(user.get().getPassword())) {
-			// message = "User login successful";
-			// return message;
+		// if (user.isPresent() && password.equals(user.get().getPassword())) {
+		if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
 			return user;
 		}
 		return Optional.empty();
@@ -74,11 +77,12 @@ public class UserServiceImpl implements UserService {
 				throw new Exception("User not found");
 		}
 
-		if (!updatePasswordDto.getCurrentPassword().equals(user.getPassword())) {
+		if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), user.getPassword())) {
 			throw new Exception("Current password is incorrect");
 		}
 
-		user.setPassword(updatePasswordDto.getNewPassword());
+		// user.setPassword(updatePasswordDto.getNewPassword());
+		user.setPassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
 		userRepository.save(user);
 
 		return message;
@@ -109,7 +113,8 @@ public class UserServiceImpl implements UserService {
 		if (!forgotPasswordDto.getNewPassword().equals(forgotPasswordDto.getConfirmPassword())) {
 			throw new Exception("Password is incorrect");
 		}
-		user.setPassword(forgotPasswordDto.getNewPassword());
+		// user.setPassword(forgotPasswordDto.getNewPassword());
+		user.setPassword(passwordEncoder.encode(forgotPasswordDto.getNewPassword()));
 		userRepository.save(user);
 
 		return userOptional;
@@ -128,6 +133,12 @@ public class UserServiceImpl implements UserService {
 		} else {
 			throw new Exception("User not found with id: " + id);
 		}
+	}
+
+	@Override
+	public Optional<User> getUserById(Long id) {
+		return userRepository.findById(id);
+
 	}
 
 }

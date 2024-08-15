@@ -42,7 +42,7 @@ public class User {
 	@Column(length = 30, unique = true)
 	@Email(message = "Email should be valid")
 	private String email;
-	@Column(length = 20)
+	@Column(length = 70)
 	@NotBlank(message = "Password is mandatory")
 	@NotNull
 	@Size(min = 6, message = "Password must be atleast 6 characters ")

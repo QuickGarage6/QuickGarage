@@ -76,6 +76,11 @@ public class UserController {
 		return userService.getUserByMobile(mobile).map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
+	@GetMapping("/{id}")
+	public ResponseEntity<User> getUserById(@RequestParam Long id) {
+		return userService.getUserById(id).map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
+	}
 
 	@PutMapping("/{username}/update-password")
 	public ResponseEntity<String> updatePassword(@PathVariable String username,

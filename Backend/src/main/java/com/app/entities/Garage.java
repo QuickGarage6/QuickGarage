@@ -1,7 +1,5 @@
 package com.app.entities;
 
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -40,17 +37,17 @@ public class Garage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(length = 30)
+	@Column(name="ownerName",length = 30)
 	@NotBlank(message = "Owner Name is mandatory")
 	@NotNull
 	private String ownerName;
 
-	@Column(length = 30)
+	@Column(name="garageName",length = 30)
 	@NotBlank(message = "Garage Name is mandatory")
 	@NotNull
 	private String garageName;
 
-	@Column(length = 15)
+	@Column(name="mobileNo",length = 15)
 	@NotNull
 	@NotBlank(message = "Mobile number is mandatory")
 	@Size(min = 10, max = 10, message = "Mobile number must be 10 digits")
@@ -59,7 +56,8 @@ public class Garage {
 	@Column(length = 30, unique = true)
 	@Email(message = "Email should be valid")
 	private String email;
-
+    
+	@Column(length = 30)
 	@Enumerated(EnumType.STRING)
 	private Services serviceType;
 
@@ -68,15 +66,15 @@ public class Garage {
 	@NotNull
 	private Address address;
 
-	@Column(length = 20)
+	@Column(name="licenseNumber",length = 20)
 	@NotNull
 	private int licenseNumber;
 
-	@Column(length = 20)
+	@Column(name="yrsOfOperation",length = 20)
 	@NotNull
 	private int yrsOfOperation;
 
-	@Column(length = 20)
+	@Column(length = 70)
 	@NotBlank(message = "Password is mandatory")
 	@NotNull
 	@Size(min = 6, message = "Password must be atleast 6 characters ")
