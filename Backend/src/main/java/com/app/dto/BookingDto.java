@@ -13,6 +13,7 @@ public class BookingDto {
 
 	@JsonProperty(access = Access.READ_ONLY)
 	private Long id;
+	
 	private Long userId;
 	private Long garageId;
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)

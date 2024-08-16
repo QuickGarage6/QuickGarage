@@ -2,6 +2,8 @@ package com.app.controller;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,13 +38,13 @@ public class AdminController {
 	}
 
 	 @DeleteMapping("/users/{id}")
-	    public ResponseEntity<String> deleteUser(@PathVariable Long id) throws Exception {
+	    public ResponseEntity<String> deleteUser(@PathVariable @NotNull Long id) throws Exception {
 	        userService.deleteUserById(id);
 	        return ResponseEntity.ok("User deleted successfully.");
 	    }
 	 
 	 @DeleteMapping("/garage/{id}")
-	    public ResponseEntity<String> deleteGarage(@PathVariable Long id) throws Exception{
+	    public ResponseEntity<String> deleteGarage(@PathVariable @NotNull Long id) throws Exception{
 	        garageService.deleteGarageById(id);
 	        return ResponseEntity.ok("Garage deleted successfully.");
 	    }

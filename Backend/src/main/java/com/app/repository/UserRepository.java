@@ -26,16 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Transactional
 	@Query("Delete from User u where u.email=:username OR u.mobileNo=:username")
 	void deleteUser(String username) ;
-	
-	@Query(value = "SELECT *, " +
-            "ST_Distance_Sphere(POINT(:longitude, :latitude), POINT(g.longitude, g.latitude)) AS distance " +
-            "FROM garage g " +
-            "WHERE ST_Distance_Sphere(POINT(:longitude, :latitude), POINT(g.longitude, g.latitude)) <= :radius " +
-            "ORDER BY distance",
-    nativeQuery = true)
-List<Garage> findNearbyGarages(@Param("latitude") double latitude,
-                            @Param("longitude") double longitude,
-                            @Param("radius") double radius);
 
 }
 

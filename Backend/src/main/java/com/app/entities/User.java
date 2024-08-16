@@ -39,9 +39,11 @@ public class User {
 	@NotBlank(message = "Mobile number is mandatory")
 	@Size(min = 10, max = 10, message = "Mobile number must be 10 digits")
 	private String mobileNo;
+	
 	@Column(length = 30, unique = true)
 	@Email(message = "Email should be valid")
 	private String email;
+	
 	@Column(length = 70)
 	@NotBlank(message = "Password is mandatory")
 	@NotNull

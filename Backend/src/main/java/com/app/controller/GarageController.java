@@ -3,6 +3,9 @@ package com.app.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,14 +25,13 @@ import com.app.dto.ForgotPasswordDto;
 import com.app.dto.GarageSignInDto;
 import com.app.dto.GarageSignUpDto;
 import com.app.dto.GarageUpdateDto;
-import com.app.dto.InteractionDto;
 import com.app.dto.NotificationDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
 import com.app.entities.Garage;
+import com.app.entities.Services;
 import com.app.service.GarageServiceImpl;
-import com.app.service.InteractionService;
-import com.app.service.NotificationService;
+import com.app.service.NotificationServiceImpl;
 
 @RestController
 @RequestMapping("/api/garage")
@@ -38,18 +40,15 @@ public class GarageController {
 	private GarageServiceImpl garageService;
 
 	@Autowired
-	private InteractionService interactionService;
-
-	@Autowired
-	private NotificationService notificationService;
+	private NotificationServiceImpl notificationService;
 
 	@Autowired
 	private ModelMapper modelMapper;
 
 	@PostMapping("/signup")
-	public ResponseEntity<ApiResponse<Garage>> signUp(@RequestBody GarageSignUpDto garageSignUpDto) throws Exception {
+	public ResponseEntity<ApiResponse<Garage>> signUp(@RequestBody @Valid GarageSignUpDto garageSignUpDto) throws Exception {
 
-		// Convert DTO to Entity
+		
 		Garage garage = modelMapper.map(garageSignUpDto, Garage.class);
 		if (garageSignUpDto.getAddressDto() != null) {
 			Address address = modelMapper.map(garageSignUpDto.getAddressDto(), Address.class);
@@ -63,7 +62,7 @@ public class GarageController {
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<ApiResponse<Garage>> signIn(@RequestBody GarageSignInDto garageSignInDto) {
+	public ResponseEntity<ApiResponse<Garage>> signIn(@RequestBody @Valid GarageSignInDto garageSignInDto) {
 		Optional<Garage> garageOptional = garageService.signIn(garageSignInDto.getUserName(),
 				garageSignInDto.getPassword());
 		if (garageOptional.isPresent()) {
@@ -77,19 +76,19 @@ public class GarageController {
 	}
 
 	@GetMapping("/email")
-	public ResponseEntity<Garage> getGarageByEmail(@RequestParam String email) {
+	public ResponseEntity<Garage> getGarageByEmail(@RequestParam @NotNull String email) {
 		return garageService.getGarageByEmail(email).map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@GetMapping("/mobile")
-	public ResponseEntity<Garage> getGarageByMobile(@RequestParam String mobile) {
+	public ResponseEntity<Garage> getGarageByMobile(@RequestParam @NotNull String mobile) {
 		return garageService.getGarageByMobile(mobile).map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@DeleteMapping("/{username}/delete")
-	public ResponseEntity<String> deleteGarage(@PathVariable String username) {
+	public ResponseEntity<String> deleteGarage(@PathVariable @NotNull String username) {
 		try {
 			String message = garageService.deleteGarage(username);
 			return ResponseEntity.ok(message);
@@ -100,8 +99,8 @@ public class GarageController {
 	}
 
 	@PutMapping("/{username}/update-password")
-	public ResponseEntity<String> updatePassword(@PathVariable String username,
-			@RequestBody UpdatePasswordDto updatePasswordDto) {
+	public ResponseEntity<String> updatePassword(@PathVariable @NotNull String username,
+			@RequestBody @Valid UpdatePasswordDto updatePasswordDto) {
 		try {
 
 			String message = garageService.updatePassword(username, updatePasswordDto);
@@ -112,7 +111,7 @@ public class GarageController {
 	}
 
 	@PutMapping("/{username}/update-garage")
-	public ResponseEntity<String> updateGarageDetails(@PathVariable String username,
+	public ResponseEntity<String> updateGarageDetails(@PathVariable @NotNull String username,
 			@RequestBody GarageUpdateDto garageUpdateDto) {
 		System.out.println("Received GarageUpdateDto: " + garageUpdateDto);
 		try {
@@ -125,7 +124,7 @@ public class GarageController {
 	}
 
 	@PutMapping("/forget-password")
-	public ResponseEntity<ApiResponse<Garage>> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) {
+	public ResponseEntity<ApiResponse<Garage>> forgotPassword(@RequestBody @Valid ForgotPasswordDto forgotPasswordDto) {
 		try {
 
 			Optional<Garage> garageOptional = garageService.forgotPassword(forgotPasswordDto);
@@ -140,22 +139,24 @@ public class GarageController {
 	}
 
 	@GetMapping("/nearby")
-	public ResponseEntity<ApiResponse<List<Garage>>> getNearbyGarages(@RequestParam double latitude,
+	public ResponseEntity<ApiResponse<List<Garage>>> getNearbyGarages(@RequestParam @NotNull double latitude,
 			@RequestParam double longitude, @RequestParam(defaultValue = "5") double radiusInKm) {
 		List<Garage> garages = garageService.getNearbyGarages(latitude, longitude, radiusInKm);
 		ApiResponse<List<Garage>> response = new ApiResponse<>(HttpStatus.OK, "List displayed successfully", garages);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/{garageId}/interactions")
-	public List<InteractionDto> getGarageInteractions(@PathVariable Long garageId) {
-		return interactionService.getInteractionsForGarage(garageId);
-	}
 
 	@GetMapping("/{garageId}/notification")
-  public List<NotificationDto> getNotification(@PathVariable Long garageId) {
+  public List<NotificationDto> getNotification(@PathVariable @NotNull Long garageId) {
       return notificationService.getNotifications(garageId);
   }
+	@GetMapping("/services")
+	public ResponseEntity<ApiResponse<List<Services>>> getServices() {
+		List<Services> service= garageService.getServices();
+		ApiResponse<List<Services>> response = new ApiResponse<>(HttpStatus.OK, "Service List displayed successfully", service);
+		return ResponseEntity.ok(response);
+	}
 	
 //	@GetMapping
 //	public ResponseEntity<List<Notification>> getNotifications(@PathVariable Long garageId) {
@@ -170,4 +171,8 @@ public class GarageController {
 //        return garageService.getNearbyGarages(latitude, longitude, radiusInKm);
 //    }
 
+//	@GetMapping("/{garageId}/interactions")
+//	public List<InteractionDto> getGarageInteractions(@PathVariable @NotNull Long garageId) {
+//		return interactionService.getInteractionsForGarage(garageId);
+//	}
 }

@@ -1,5 +1,6 @@
 package com.app.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.app.custom_exceptions.GarageExceptions;
 import com.app.dto.AddressDto;
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.GarageDetailsForUserDto;
@@ -19,6 +21,7 @@ import com.app.dto.GarageUpdateDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
 import com.app.entities.Garage;
+import com.app.entities.Services;
 import com.app.repository.GarageRepository;
 
 @Service
@@ -27,35 +30,34 @@ public class GarageServiceImpl implements GarageService {
 
 	@Autowired
 	private GarageRepository garageRepository;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public Garage signUp(Garage garage) throws Exception {
+	public Garage signUp(Garage garage) throws GarageExceptions {
 		if (garageRepository.findByEmail(garage.getEmail()).isPresent()) {
-			throw new Exception("Email already in use");
+			throw new GarageExceptions("Email already in use");
 		}
 		if (garageRepository.findByMobileNo(garage.getMobileNo()).isPresent()) {
-			throw new Exception("Mobile number already in use");
+			throw new GarageExceptions("Mobile number already in use");
 		}
 
 		if (!garage.getConfirmPassword().equals(garage.getPassword())) {
-			throw new Exception("Password do not match");
+			throw new GarageExceptions("Password do not match");
 		}
+
 		garage.setPassword(passwordEncoder.encode(garage.getPassword()));
 		return garageRepository.save(garage);
 	}
 
 	public Optional<Garage> signIn(String garageName, String password) {
 		Optional<Garage> garage = garageRepository.findByEmail(garageName);
-		// String message = "garage not found";
 		if (!garage.isPresent()) {
 			garage = garageRepository.findByMobileNo(garageName);
 		}
-		//if (garage.isPresent() && password.equals(garage.get().getPassword())) {
 		if (garage.isPresent() && passwordEncoder.matches(password, garage.get().getPassword())) {
 			return garage;
 		}
@@ -71,11 +73,11 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public String deleteGarage(String garagename) throws Exception {
+	public String deleteGarage(String garagename) throws GarageExceptions {
 		Garage garage = garageRepository.findByEmail(garagename).orElse(null);
 		String message = "Account deleted successfully";
 		if (garage == null) {
-			garage = garageRepository.findByMobileNo(garagename).orElseThrow(() -> new Exception("garage not found"));
+			garage = garageRepository.findByMobileNo(garagename).orElseThrow(() -> new GarageExceptions("garage not found"));
 		}
 
 		garageRepository.delete(garage);
@@ -84,21 +86,20 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public String updatePassword(String garagename, UpdatePasswordDto updatePasswordDto) throws Exception {
+	public String updatePassword(String garagename, UpdatePasswordDto updatePasswordDto) throws GarageExceptions {
 
 		Garage garage = garageRepository.findByEmail(garagename).orElse(null);
 		String message = "Password updated successfully";
 		if (garage == null) {
 			garage = garageRepository.findByMobileNo(garagename).orElse(null);
 			if (garage == null)
-				throw new Exception("garage not found");
+				throw new GarageExceptions("garage not found");
 		}
 
 		if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), garage.getPassword())) {
-			throw new Exception("Current password is incorrect");
+			throw new GarageExceptions("Current password is incorrect");
 		}
 
-		//garage.setPassword(updatePasswordDto.getNewPassword());
 		garage.setPassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
 		garageRepository.save(garage);
 
@@ -106,13 +107,13 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public String updateGarageDetails(String username, GarageUpdateDto garageUpdateDto) throws Exception {
+	public String updateGarageDetails(String username, GarageUpdateDto garageUpdateDto) throws GarageExceptions {
 		Garage garage = garageRepository.findByEmail(username).orElse(null);
 		String message = "Details updated successfully";
 		if (garage == null) {
 			garage = garageRepository.findByMobileNo(username).orElse(null);
 			if (garage == null)
-				throw new Exception("garage not found");
+				throw new GarageExceptions("garage not found");
 		}
 
 		if (garageUpdateDto.getOwnerName() != null) {
@@ -132,7 +133,7 @@ public class GarageServiceImpl implements GarageService {
 		}
 		if (garageUpdateDto.getAddressDto() != null) {
 			AddressDto addressDto = garageUpdateDto.getAddressDto();
-			Address address = garage.getAddress(); // Assuming you have a getter for address
+			Address address = garage.getAddress();
 
 			// Update address fields
 			if (addressDto.getStreetAddress() != null) {
@@ -151,7 +152,7 @@ public class GarageServiceImpl implements GarageService {
 				address.setCountry(addressDto.getCountry());
 			}
 
-			garage.setAddress(address); // Assuming you have a setter for address
+			garage.setAddress(address);
 		}
 		if (garageUpdateDto.getLicenseNumber() > 0) {
 			garage.setLicenseNumber(garageUpdateDto.getLicenseNumber());
@@ -167,19 +168,19 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public Optional<Garage> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception {
+	public Optional<Garage> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws GarageExceptions {
 		Optional<Garage> garageOptional = garageRepository.findByEmail(forgotPasswordDto.getUsername());
-		// String message = "Details updated successfully";
+
 		if (!garageOptional.isPresent()) {
 			garageOptional = garageRepository.findByMobileNo(forgotPasswordDto.getUsername());
 			if (!garageOptional.isPresent())
-				throw new Exception("garage not found");
+				throw new GarageExceptions("garage not found");
 		}
 		Garage garage = garageOptional.get();
 		if (!forgotPasswordDto.getNewPassword().equals(forgotPasswordDto.getConfirmPassword())) {
-			throw new Exception("Password is incorrect");
+			throw new GarageExceptions("Password is incorrect");
 		}
-		//garage.setPassword(forgotPasswordDto.getNewPassword());
+
 		garage.setPassword(passwordEncoder.encode(forgotPasswordDto.getNewPassword()));
 
 		garageRepository.save(garage);
@@ -194,24 +195,32 @@ public class GarageServiceImpl implements GarageService {
 		return garages.stream().map(garage -> modelMapper.map(garage, GarageDto.class)).collect(Collectors.toList());
 
 	}
-	
+
 	@Override
 	public List<GarageDetailsForUserDto> getAllGaragesForUser() {
 		List<Garage> garages = garageRepository.findAll();
-		return garages.stream().map(garage -> modelMapper.map(garage, GarageDetailsForUserDto.class)).collect(Collectors.toList());
+		return garages.stream().map(garage -> modelMapper.map(garage, GarageDetailsForUserDto.class))
+				.collect(Collectors.toList());
 
 	}
-	
+
 	public List<Garage> getNearbyGarages(double latitude, double longitude, double radiusInKm) {
-        double radiusInMeters = radiusInKm * 1000; // Convert radius to meters
-        return garageRepository.findNearbyGarages(latitude, longitude, radiusInMeters);
-    }
-	
-	 public void deleteGarageById(Long id) throws Exception {
-	        if (garageRepository.existsById(id)) {
-	            garageRepository.deleteById(id);
-	        } else {
-	            throw new Exception("Garage not found with id: " + id);
-	        }
-	    }
+		double radiusInMeters = radiusInKm * 1000;
+		return garageRepository.findNearbyGarages(latitude, longitude, radiusInMeters);
+	}
+
+	public void deleteGarageById(Long id) throws GarageExceptions {
+		if (garageRepository.existsById(id)) {
+			garageRepository.deleteById(id);
+		} else {
+			throw new GarageExceptions("Garage not found with id: " + id);
+		}
+	}
+
+	@Override
+	public List<Services> getServices() {
+		Services[] services = Services.values();
+		return Arrays.asList(services);
+	}
+
 }

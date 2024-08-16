@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.app.custom_exceptions.UserExceptions;
 import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserDto;
@@ -30,19 +31,19 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public User signUp(User user) throws Exception {
+	public User signUp(User user) throws UserExceptions {
 		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-			throw new Exception("Email already in use");
+			throw new UserExceptions("Email already in use");
 		}
 		if (userRepository.findByMobileNo(user.getMobileNo()).isPresent()) {
-			throw new Exception("Mobile number already in use");
+			throw new UserExceptions("Mobile number already in use");
 		}
 
 		if (!user.getConfirmPassword().equals(user.getPassword())) {
-			throw new Exception("Password do not match");
+			throw new UserExceptions("Password do not match");
 		}
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		
+
 		return userRepository.save(user);
 	}
 
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
 		if (!user.isPresent()) {
 			user = userRepository.findByMobileNo(username);
 		}
-		// if (user.isPresent() && password.equals(user.get().getPassword())) {
+
 		if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
 			return user;
 		}
@@ -67,21 +68,20 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String updatePassword(String username, UpdatePasswordDto updatePasswordDto) throws Exception {
+	public String updatePassword(String username, UpdatePasswordDto updatePasswordDto) throws UserExceptions {
 
 		User user = userRepository.findByEmail(username).orElse(null);
 		String message = "Password updated successfully";
 		if (user == null) {
 			user = userRepository.findByMobileNo(username).orElse(null);
 			if (user == null)
-				throw new Exception("User not found");
+				throw new UserExceptions("User not found");
 		}
 
 		if (!passwordEncoder.matches(updatePasswordDto.getCurrentPassword(), user.getPassword())) {
-			throw new Exception("Current password is incorrect");
+			throw new UserExceptions("Current password is incorrect");
 		}
 
-		// user.setPassword(updatePasswordDto.getNewPassword());
 		user.setPassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
 		userRepository.save(user);
 
@@ -89,11 +89,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String deleteUser(String username) throws Exception {
+	public String deleteUser(String username) throws UserExceptions {
 		User user = userRepository.findByEmail(username).orElse(null);
 		String message = "Account deleted successfully";
 		if (user == null) {
-			user = userRepository.findByMobileNo(username).orElseThrow(() -> new Exception("User not found"));
+			user = userRepository.findByMobileNo(username).orElseThrow(() -> new UserExceptions("User not found"));
 		}
 
 		userRepository.deleteUser(username);
@@ -101,19 +101,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<User> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws Exception {
+	public Optional<User> forgotPassword(ForgotPasswordDto forgotPasswordDto) throws UserExceptions {
 		Optional<User> userOptional = userRepository.findByEmail(forgotPasswordDto.getUsername());
-		// String message = "Details updated successfully";
+
 		if (!userOptional.isPresent()) {
 			userOptional = userRepository.findByMobileNo(forgotPasswordDto.getUsername());
 			if (!userOptional.isPresent())
-				throw new Exception("user not found");
+				throw new UserExceptions("user not found");
 		}
 		User user = userOptional.get();
 		if (!forgotPasswordDto.getNewPassword().equals(forgotPasswordDto.getConfirmPassword())) {
-			throw new Exception("Password is incorrect");
+			throw new UserExceptions("Password is incorrect");
 		}
-		// user.setPassword(forgotPasswordDto.getNewPassword());
+
 		user.setPassword(passwordEncoder.encode(forgotPasswordDto.getNewPassword()));
 		userRepository.save(user);
 
@@ -127,11 +127,11 @@ public class UserServiceImpl implements UserService {
 		return users.stream().map(user -> modelMapper.map(user, UserDto.class)).collect(Collectors.toList());
 	}
 
-	public void deleteUserById(Long id) throws Exception {
+	public void deleteUserById(Long id) throws UserExceptions {
 		if (userRepository.existsById(id)) {
 			userRepository.deleteById(id);
 		} else {
-			throw new Exception("User not found with id: " + id);
+			throw new UserExceptions("User not found with id: " + id);
 		}
 	}
 

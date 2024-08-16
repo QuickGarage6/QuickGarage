@@ -22,7 +22,7 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
-	@Bean // equivalent to <bean id ..../> in xml file
+	@Bean 
 	public ModelMapper mapper() {
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT)
@@ -50,7 +50,7 @@ public class Application {
 			}
 		});
 		
-		// Map nested Address to AddressDto
+		// Map nested Address to AddressForUserDto
 				modelMapper.addMappings(new PropertyMap<Garage, GarageDetailsForUserDto>() {
 					@Override
 					protected void configure() {
@@ -58,6 +58,7 @@ public class Application {
 					}
 				});
 		
+		// Map Address fields to AddressForUserDto
 		modelMapper.addMappings(new PropertyMap<Address, GarageAddressForUserDto>() {
 			@Override
 			protected void configure() {

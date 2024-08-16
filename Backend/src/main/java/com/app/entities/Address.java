@@ -29,18 +29,22 @@ public class Address {
 	@NotBlank(message = "Street Address is mandatory")
 	@NotNull
 	private String streetAddress;
+	
 	@Column(length = 20)
 	@NotNull
 	@NotBlank(message = "City is mandatory")
 	private String city;
+	
 	@Column(length = 20)
 	@NotNull
 	@NotBlank(message = "State is mandatory")
 	private String state;
+	
 	@Column(length = 20)
 	@NotNull
 	@NotBlank(message = "Country is mandatory")
 	private String country;
+	
 	@Column(length = 20, name = "zip_code")
 	@NotNull
 	@NotBlank(message = "Zip code is mandatory")

@@ -15,7 +15,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().anyRequest().permitAll() // Allow all requests without authentication
-				.and().csrf().disable(); // Disable CSRF protection (not recommended for production)
+				.and().csrf().disable(); // Disable CSRF protection 
 	}
 
 	@Bean

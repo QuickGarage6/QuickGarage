@@ -3,6 +3,9 @@ package com.app.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,11 +44,11 @@ public class UserController {
 	private ModelMapper modelMapper;
 
 	
-
+    
 	@PostMapping("/signup")
-	public ResponseEntity<ApiResponse<User>> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
+	public ResponseEntity<ApiResponse<User>> signUp( @RequestBody @Valid UserSignUpDto userSignUpDto) throws Exception {
 
-		// Convert DTO to Entity
+		
 		User user = modelMapper.map(userSignUpDto, User.class);
 
 		User newUser = userService.signUp(user);
@@ -54,7 +57,7 @@ public class UserController {
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<ApiResponse<User>> signIn(@RequestBody UserSignInDto userSignInDto) {
+	public ResponseEntity<ApiResponse<User>> signIn( @RequestBody @Valid UserSignInDto userSignInDto) {
 		Optional<User> userOptional = userService.signIn(userSignInDto.getUserName(), userSignInDto.getPassword());
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
@@ -66,25 +69,25 @@ public class UserController {
 	}
 
 	@GetMapping("/email")
-	public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
+	public ResponseEntity<User> getUserByEmail(@RequestParam @NotNull  String email) {
 		return userService.getUserByEmail(email).map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@GetMapping("/mobile")
-	public ResponseEntity<User> getUserByMobile(@RequestParam String mobile) {
+	public ResponseEntity<User> getUserByMobile(@RequestParam @NotNull String mobile) {
 		return userService.getUserByMobile(mobile).map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getUserById(@RequestParam Long id) {
+	public ResponseEntity<User> getUserById(@RequestParam @NotNull Long id) {
 		return userService.getUserById(id).map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@PutMapping("/{username}/update-password")
-	public ResponseEntity<String> updatePassword(@PathVariable String username,
-			@RequestBody UpdatePasswordDto updatePasswordDto) {
+	public ResponseEntity<String> updatePassword(@PathVariable @NotNull String username,
+			@RequestBody @Valid UpdatePasswordDto updatePasswordDto) {
 		try {
 
 			userService.updatePassword(username, updatePasswordDto);
@@ -95,7 +98,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{username}/delete")
-	public ResponseEntity<String> deleteUser(@PathVariable String username) {
+	public ResponseEntity<String> deleteUser(@PathVariable @NotNull String username) {
 		try {
 			String message = userService.deleteUser(username);
 			return ResponseEntity.ok(message);
@@ -106,7 +109,7 @@ public class UserController {
 	}
 
 	@PutMapping("/forget-password")
-	public ResponseEntity<ApiResponse<User>> forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) {
+	public ResponseEntity<ApiResponse<User>> forgotPassword(@Valid @RequestBody ForgotPasswordDto forgotPasswordDto) {
 		try {
 
 			Optional<User> userOptional = userService.forgotPassword(forgotPasswordDto);
