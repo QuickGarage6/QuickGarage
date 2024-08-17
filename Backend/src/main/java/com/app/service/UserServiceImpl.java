@@ -16,6 +16,7 @@ import com.app.dto.ForgotPasswordDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserDto;
 import com.app.entities.User;
+import com.app.repository.BookingRepository;
 import com.app.repository.UserRepository;
 
 @Service
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private BookingRepository bookingRepository;
 
 	public User signUp(User user) throws UserExceptions {
 		if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -129,6 +133,7 @@ public class UserServiceImpl implements UserService {
 
 	public void deleteUserById(Long id) throws UserExceptions {
 		if (userRepository.existsById(id)) {
+			bookingRepository.deleteByUserId(id);
 			userRepository.deleteById(id);
 		} else {
 			throw new UserExceptions("User not found with id: " + id);

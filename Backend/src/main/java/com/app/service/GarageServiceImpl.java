@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import com.app.custom_exceptions.GarageExceptions;
 import com.app.dto.AddressDto;
 import com.app.dto.ForgotPasswordDto;
-import com.app.dto.GarageDetailsForUserDto;
 import com.app.dto.GarageDto;
 import com.app.dto.GarageUpdateDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.entities.Address;
 import com.app.entities.Garage;
 import com.app.entities.Services;
+import com.app.repository.BookingRepository;
 import com.app.repository.GarageRepository;
 
 @Service
@@ -30,6 +30,9 @@ public class GarageServiceImpl implements GarageService {
 
 	@Autowired
 	private GarageRepository garageRepository;
+	
+	@Autowired
+	private BookingRepository bookingRepository;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -211,6 +214,8 @@ public class GarageServiceImpl implements GarageService {
 
 	public void deleteGarageById(Long id) throws GarageExceptions {
 		if (garageRepository.existsById(id)) {
+			
+			bookingRepository.deleteByGarageId(id);
 			garageRepository.deleteById(id);
 		} else {
 			throw new GarageExceptions("Garage not found with id: " + id);
