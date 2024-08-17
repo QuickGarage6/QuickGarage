@@ -37,40 +37,6 @@ const ContactUs = () => {
       >
         We’d love to hear from you! Please fill out the form below or contact us via the provided methods.
       </motion.p>
-      <motion.div
-        className={styles.formContainer}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h2 className={styles.formTitle}>Send Us a Message</h2>
-        <form>
-          <input
-            type="text"
-            placeholder="Your Name"
-            className={styles.input}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Your Email"
-            className={styles.input}
-            required
-          />
-          <textarea
-            placeholder="Your Message"
-            rows="5"
-            className={styles.textarea}
-            required
-          />
-          <button
-            type="submit"
-            className={styles.submitButton}
-          >
-            Send Message
-          </button>
-        </form>
-      </motion.div>
 
       <motion.div
         className={styles.contactInfo}

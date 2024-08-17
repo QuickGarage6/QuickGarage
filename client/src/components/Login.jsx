@@ -173,11 +173,11 @@ const Login = () => {
                         <h2 className="text-2xl font-semibold mb-4">Reset Password</h2>
                         <form onSubmit={handlePasswordReset}>
                             <div className="mb-4">
-                                <label htmlFor="resetEmail" className={styles.label}>Email</label>
+                                <label htmlFor="resetEmail" className={styles.label}>Username</label>
                                 <input
                                     id="resetEmail"
                                     name="resetEmail"
-                                    type="email"
+                                    type="text"
                                     placeholder="Enter Your Email"
                                     className={styles.input}
                                     value={resetEmail}

@@ -25,14 +25,6 @@ const Footer = () => {
             <p className="text-gray-400 text-sm">© {new Date().getFullYear()} Quick Garage. All rights reserved.</p>
           </div>
           <div className={styles.links}>
-            <div className={styles.linkItem}>
-              <h3 className={styles.linkTitle}>Links</h3>
-              <ul>
-                <li><Link to="/" className={styles.link}>Home</Link></li>
-                <li><Link to="/about" className={styles.link}>About Us</Link></li>
-                <li><Link to="/contact" className={styles.link}>Contact Us</Link></li>
-              </ul>
-            </div>
             <div className={styles.contactInfo}>
               <h3 className={styles.linkTitle}>Contact</h3>
               <p className="text-gray-400 text-sm">Cdac, Panchavti Pune, Maharashtra</p>

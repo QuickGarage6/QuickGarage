@@ -19,6 +19,7 @@ const EditGarage = () => {
             city: '',
             state: '',
             zipCode: '',
+            country:'',
         },
     });
 
