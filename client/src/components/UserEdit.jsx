@@ -154,10 +154,6 @@ const ChangePassword = () => {
                 >
                     {loading ? 'Updating...' : 'Update Password'}
                 </motion.button>
-                
-                <div className="text-center mt-4">
-                    <Link to="/login" className={styles.link}>Back to Login</Link>
-                </div>
             </motion.form>
         </div>
     );

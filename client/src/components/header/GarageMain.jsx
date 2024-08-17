@@ -11,13 +11,18 @@ const GarageMain = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
 
+  const handleModel = () => {
+    setModalVisible((prev) => {
+      !prev;
+    });
+  }
   const styles = {
     container: 'relative flex md:flex-row items-center justify-center min-w-[100%] min-h-screen max-w-4xl mx-auto bg-gradient-to-r from-blue-500 to-blue-900 p-6 rounded-lg shadow-lg mt-8 z-10 pt-0',
     notificationContainer: 'md:w-1/2 bg-blue-700 text-white p-4 rounded-lg mb-4 md:mb-0 md:mr-4 shadow-md',
     notificationTitle: 'text-xl font-bold mb-4',
     notificationItem: 'flex items-center justify-between p-3 rounded-lg mb-2 transition duration-300 cursor-pointer',
     notificationItemUnread: 'bg-blue-900 hover:bg-blue-800',
-    notificationItemRead: 'bg-blue-600',
+    notificationItemRead: 'bg-red-600',
     notificationText: 'text-sm',
     infoContainer: 'w-full md:w-1/2 bg-white text-gray-800 p-4 rounded-lg shadow-md',
     infoTitle: 'text-xl font-bold mb-4 text-blue-900',
@@ -25,7 +30,7 @@ const GarageMain = () => {
     bellIcon: 'mr-2 text-white opacity-80',
     errorMessage: 'text-red-500 text-sm mt-2',
     buttonContainer: 'flex justify-center gap-4 mt-6',
-    button: 'bg-blue-500 text-white p-2 rounded-lg shadow hover:bg-blue-600 transition duration-300',
+    button: 'bg-blue-500 text-white p-2 rounded-lg shadow hover:bg-blue-600 transition duration-300 ',
     deleteButton: 'bg-red-500 text-white p-2 rounded-lg shadow hover:bg-red-600 transition duration-300',
     modal: 'fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75',
     modalContent: 'bg-white p-6 rounded-lg shadow-lg max-w-sm mx-auto',
@@ -204,6 +209,7 @@ const GarageMain = () => {
       {modalVisible && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
+
             {userDetails && (
               <div>
                 <p><strong>User Details:</strong></p>
@@ -215,6 +221,7 @@ const GarageMain = () => {
             <div className={styles.modalFooter}>
               <button className={styles.actionButton} onClick={handleAccept}>Accept</button>
               <button className={styles.cancelButton} onClick={handleReject}>Reject</button>
+              <button className={styles.button} onClick={handleModel}>close</button>
             </div>
           </div>
         </div>

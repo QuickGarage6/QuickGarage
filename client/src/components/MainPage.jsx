@@ -61,7 +61,6 @@ const MainPage = () => {
   }, [filter, garages]);
 
   const handleGarageClick = (garage) => {
-    console.log(garage);
     setSelectedGarage(garage);
   };
 
@@ -73,7 +72,6 @@ const MainPage = () => {
     try {
       const response = await fetch(`http://localhost:8080/api/garage/nearby?latitude=${latitude}&longitude=${longitude}&radiusInKm=${radiusInKm}`);
       const data = await response.json();
-      console.log("Nearby garages data:", data); // Debug statement
       setGarages(data.data);
     } catch (error) {
       console.error("Error fetching nearby garages", error);
