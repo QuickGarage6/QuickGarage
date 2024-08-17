@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GarageModal from './GarageModal';
-import { FaCar } from 'react-icons/fa'; // Font Awesome icons for car
+import { FaCar } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MainPage = () => {
   const styles = {
@@ -29,20 +31,25 @@ const MainPage = () => {
   const [selectedGarage, setSelectedGarage] = useState(null);
   const [filter, setFilter] = useState('All');
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [serviceTypes, setServiceTypes] = useState([]);
   const [serviceType, setServiceType] = useState('All');
-  const [radius, setRadius] = useState(5); // Default radius in km
+  const [radius, setRadius] = useState(5);
 
   useEffect(() => {
-    const fetchGarages = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/user/garages');
-        const data = await response.json();
-        setGarages(data);
+        const garagesResponse = await fetch('http://localhost:8080/api/user/garages');
+        const garagesData = await garagesResponse.json();
+        setGarages(garagesData);
+
+        const serviceTypesResponse = await fetch('http://localhost:8080/api/garage/services');
+        const serviceTypesData = await serviceTypesResponse.json();
+        setServiceTypes(serviceTypesData.data || []);
       } catch (error) {
-        console.error("Error fetching garages", error);
+        console.error("Error fetching data", error);
       }
     };
-    fetchGarages();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -54,6 +61,7 @@ const MainPage = () => {
   }, [filter, garages]);
 
   const handleGarageClick = (garage) => {
+    console.log(garage);
     setSelectedGarage(garage);
   };
 
@@ -61,15 +69,12 @@ const MainPage = () => {
     setSelectedGarage(null);
   };
 
-  const handleFilterChange = (filterType) => {
-    setFilter(filterType);
-  };
-
   const fetchNearbyGarages = async (latitude, longitude, radiusInKm = 5) => {
     try {
-      const response = await fetch(`/api/garage/nearby?latitude=${latitude}&longitude=${longitude}&radiusInKm=${radiusInKm}`);
+      const response = await fetch(`http://localhost:8080/api/garage/nearby?latitude=${latitude}&longitude=${longitude}&radiusInKm=${radiusInKm}`);
       const data = await response.json();
-      setGarages(data);
+      console.log("Nearby garages data:", data); // Debug statement
+      setGarages(data.data);
     } catch (error) {
       console.error("Error fetching nearby garages", error);
     }
@@ -101,10 +106,25 @@ const MainPage = () => {
     setFilter(event.target.value);
   };
 
+  const bookGarage = async (garageId) => {
+    const userId = JSON.parse(localStorage.getItem('userData')).data.id;
+    try {
+      await fetch('http://localhost:8080/api/booking/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, garageId })
+      });
+      toast.success('Garage booked successfully!');
+    } catch (error) {
+      console.error('Error booking garage', error);
+      toast.error('Error booking garage');
+    }
+  };
+
   return (
     <div className={styles.container}>
       <motion.div
-        className={styles.carIcon}
+        className={`${styles.carIcon}`}
         style={{ fontSize: '4rem', top: '10%', left: '5%' }}
         animate={{ x: [0, 50, 0], opacity: [0.5, 1, 0.5] }}
         transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
@@ -112,83 +132,68 @@ const MainPage = () => {
         <FaCar />
       </motion.div>
       <motion.div
-        className={styles.carIcon}
+        className={`${styles.carIcon}`}
         style={{ fontSize: '3rem', top: '50%', right: '10%' }}
-        animate={{ x: [-20, 20, -20], opacity: [0.5, 1, 0.5] }}
-        transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+        animate={{ x: [-20, 20, -20], opacity: [0.3, 1, 0.3] }}
+        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
       >
         <FaCar />
       </motion.div>
-      <motion.div
-        className={styles.carIcon}
-        style={{ fontSize: '2rem', top: '30%', left: '30%' }}
-        animate={{ y: [0, -20, 0], opacity: [0.5, 1, 0.5] }}
-        transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-      >
-        <FaCar />
-      </motion.div>
-
-      <h1 className={styles.title}>Find Nearby Garages</h1>
-      <h2 className={styles.subtitle}>Get quick and reliable services at the best garages near you</h2>
+      <h1 className={styles.title}>Find Your Ideal Garage</h1>
+      <p className={styles.subtitle}>Book your preferred garage based on service type and location</p>
 
       <div className={styles.filterContainer}>
-        <select
-          className={styles.dropdown}
-          value={serviceType}
-          onChange={handleServiceChange}
-        >
+        <select className={styles.dropdown} value={serviceType} onChange={handleServiceChange}>
           <option value="All">All Services</option>
-          <option value="CARS">Cars</option>
-          <option value="TWOWHEELER">Two-Wheeler</option>
-          <option value="BOTH">Both</option>
+          {serviceTypes.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
         </select>
-
-        <input
-          type="range"
-          min="1"
-          max="50"
-          value={radius}
-          onChange={handleRadiusChange}
-          className={styles.slider}
-        />
-        <span className="text-white">Radius: {radius} km</span>
+        <button className={styles.locationButton} onClick={handleLocationClick}>
+          Find Nearby Garages
+        </button>
+        <div className="flex items-center">
+          <label htmlFor="radius" className="text-white mr-2">Radius:</label>
+          <input
+            id="radius"
+            type="range"
+            min="1"
+            max="50"
+            step="1"
+            value={radius}
+            onChange={handleRadiusChange}
+            className={styles.slider}
+          />
+          <span className="text-white ml-2">{radius} km</span>
+        </div>
       </div>
 
-      <button
-        className={styles.locationButton}
-        onClick={handleLocationClick}
-      >
-        Find Nearby Garages
-      </button>
-
-      <div className={styles.mapContainer}>
-        <p className="text-center text-gray-700 pt-40">Map Component (to be integrated)</p>
-      </div>
       <div className={styles.garageList}>
-        {filteredGarages.map((garage, index) => (
-          <div
-            key={index}
-            className={styles.garageItem}
-            onClick={() => handleGarageClick(garage)}
-          >
+        {filteredGarages.map(garage => (
+          <div key={garage.id} className={styles.garageItem} onClick={() => handleGarageClick(garage)}>
             <div className={styles.garageDetails}>
-              <span className={styles.garageName}>{garage.garageName}</span>
-              <span className={styles.garageAddress}>
-                {garage.address ? `${garage.address.streetAddress}, ${garage.address.city}` : 'Address not available'}
-              </span>
-              <span className={styles.distance}>{garage.mobileNo}</span>
+              <div className={styles.garageName}>{garage.garageName}</div>
+              <div className={styles.garageAddress}>
+                {garage?.addressDto || garage?.address ? `${garage?.addressDto?.streetAddress || garage?.address?.streetAddress}, ${garage?.addressDto?.city || garage?.address?.city}` : 'Address not available'}
+              </div>
             </div>
-            <button
-              className={styles.button}
-            >
-              View Details
-            </button>
           </div>
         ))}
       </div>
+
       <AnimatePresence>
-        {selectedGarage && <GarageModal garage={selectedGarage} onClose={closeModal} />}
+        {selectedGarage && (
+          <GarageModal
+            garage={selectedGarage}
+            onClose={closeModal}
+            onBook={bookGarage}
+            latitude={selectedGarage.latitude}
+            longitude={selectedGarage.longitude}
+          />
+        )}
       </AnimatePresence>
+
+      <ToastContainer />
     </div>
   );
 };

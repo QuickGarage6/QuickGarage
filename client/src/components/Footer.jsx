@@ -35,7 +35,7 @@ const Footer = () => {
             </div>
             <div className={styles.contactInfo}>
               <h3 className={styles.linkTitle}>Contact</h3>
-              <p className="text-gray-400 text-sm">123 Garage St, Auto City</p>
+              <p className="text-gray-400 text-sm">Cdac, Panchavti Pune, Maharashtra</p>
               <p className="text-gray-400 text-sm">Email: info@quickgarage.com</p>
               <p className="text-gray-400 text-sm">Phone: (123) 456-7890</p>
             </div>

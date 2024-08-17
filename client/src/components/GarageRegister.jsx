@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -28,6 +28,25 @@ const GarageRegister = () => {
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
     const [errors, setErrors] = useState({});
+    const [serviceTypes, setServiceTypes] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [gettingLocation, setGettingLocation] = useState(false);
+
+    useEffect(() => {
+        // Fetch service types from the API
+        const fetchServiceTypes = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/garage/services');
+                if (response.status === 200) {
+                    setServiceTypes(response.data.data || []);
+                }
+            } catch (error) {
+                setMessageType('error');
+                setMessage('Failed to load service types.');
+            }
+        };
+        fetchServiceTypes();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -57,11 +76,11 @@ const GarageRegister = () => {
         let valid = true;
         let newErrors = {};
 
-        if (!formData.ownerName) {
+        if (!formData.ownerName.trim()) {
             valid = false;
             newErrors.ownerName = 'Owner name is required.';
         }
-        if (!formData.garageName) {
+        if (!formData.garageName.trim()) {
             valid = false;
             newErrors.garageName = 'Garage name is required.';
         }
@@ -73,7 +92,11 @@ const GarageRegister = () => {
             valid = false;
             newErrors.email = 'Invalid email address.';
         }
-        if (!formData.password) {
+        if (!formData.serviceType.trim()) {
+            valid = false;
+            newErrors.serviceType = 'Service type is required.';
+        }
+        if (!formData.password.trim()) {
             valid = false;
             newErrors.password = 'Password is required.';
         }
@@ -81,70 +104,95 @@ const GarageRegister = () => {
             valid = false;
             newErrors.confirmPassword = 'Passwords do not match.';
         }
-        if (!formData.addressDto.streetAddress) {
+        if (!formData.addressDto.streetAddress.trim()) {
             valid = false;
             newErrors.streetAddress = 'Street address is required.';
         }
-        if (!formData.addressDto.city) {
+        if (!formData.addressDto.city.trim()) {
             valid = false;
             newErrors.city = 'City is required.';
         }
-        if (!formData.addressDto.state) {
+        if (!formData.addressDto.state.trim()) {
             valid = false;
             newErrors.state = 'State is required.';
         }
-        if (!formData.addressDto.country) {
+        if (!formData.addressDto.country.trim()) {
             valid = false;
             newErrors.country = 'Country is required.';
         }
-        if (!formData.addressDto.zipCode) {
+        if (!formData.addressDto.zipCode.trim()) {
             valid = false;
             newErrors.zipCode = 'Zip code is required.';
         }
-        if (!formData.licenseNumber) {
+        if (!formData.licenseNumber.trim()) {
             valid = false;
             newErrors.licenseNumber = 'License number is required.';
         }
-        if (!formData.yrsOfOperation) {
+        if (!formData.yrsOfOperation.trim()) {
             valid = false;
-            newErrors.yrsOfOperation = 'Years of operation is required.';
+            newErrors.yrsOfOperation = 'Years of operation are required.';
         }
 
         setErrors(newErrors);
         return valid;
     };
-
+    const handleService = (e) => {
+        setFormData(prevData => ({
+            ...prevData,
+            serviceType: e.target.value
+        }));
+    }
     const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
+        setLoading(true);
         try {
             const response = await axios.post('http://localhost:8080/api/garage/signup', {
                 ...formData,
                 latitude,
                 longitude
             });
-            if(response.status === 200){
+            if (response.status === 200) {
                 setMessageType('success');
                 setMessage('Registration successful!');
+                setFormData({
+                    ownerName: '',
+                    garageName: '',
+                    mobileNo: '',
+                    email: '',
+                    serviceType: '',
+                    addressDto: {
+                        streetAddress: '',
+                        city: '',
+                        state: '',
+                        country: '',
+                        zipCode: ''
+                    },
+                    licenseNumber: '',
+                    yrsOfOperation: '',
+                    password: '',
+                    confirmPassword: ''
+                });
                 navigate('/login');
             }
-
         } catch (error) {
             setMessageType('error');
             setMessage(error.response?.data?.message || 'An error occurred while registering.');
+        } finally {
+            setLoading(false);
         }
     };
 
     const getLocation = (event) => {
         event.preventDefault();
+        setGettingLocation(true);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, showError);
         } else {
             setMessageType('error');
             setMessage("Geolocation is not supported by this browser.");
+            setGettingLocation(false);
         }
     };
 
@@ -153,6 +201,7 @@ const GarageRegister = () => {
         setLongitude(position.coords.longitude);
         setMessageType('success');
         setMessage("Location detected successfully. Proceed with registration.");
+        setGettingLocation(false);
     };
 
     const showError = (error) => {
@@ -175,9 +224,10 @@ const GarageRegister = () => {
                 break;
             default:
                 setMessageType('error');
-                setMessage("An unknown error occurred");
+                setMessage("An unknown error occurred.");
                 break;
         }
+        setGettingLocation(false);
     };
 
     const styles = {
@@ -205,61 +255,222 @@ const GarageRegister = () => {
                             <animate attributeName="opacity" from="0.3" to="0" dur="15s" repeatCount="indefinite" />
                         </circle>
                         <circle cx="150" cy="150" r="40" fill="rgba(255,255,255,0.2)">
-                            <animate attributeName="r" from="40" to="100" dur="15s" repeatCount="indefinite" begin="7s"/>
-                            <animate attributeName="opacity" from="0.3" to="0" dur="15s" repeatCount="indefinite" begin="7s"/>
+                            <animate attributeName="r" from="40" to="100" dur="15s" repeatCount="indefinite" begin="7s" />
+                            <animate attributeName="opacity" from="0.3" to="0" dur="15s" repeatCount="indefinite" begin="7s" />
                         </circle>
                     </svg>
                 </div>
             </div>
             <motion.div
                 className={styles.form}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <h1 className={styles.title}>Garage Registration</h1>
+                <h2 className={styles.title}>Register Your Garage</h2>
+               
                 <form onSubmit={handleSubmit}>
-                    {['ownerName', 'garageName', 'mobileNo', 'email', 'serviceType', 'streetAddress', 'city', 'state', 'country', 'zipCode', 'licenseNumber', 'yrsOfOperation', 'password', 'confirmPassword'].map((field, idx) => (
-                        <motion.div
-                            className="mb-4"
-                            key={idx}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.1 }}
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="ownerName">Owner Name</label>
+                        <input
+                            type="text"
+                            id="ownerName"
+                            name="ownerName"
+                            value={formData.ownerName}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.ownerName && <p className={styles.error}>{errors.ownerName}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="garageName">Garage Name</label>
+                        <input
+                            type="text"
+                            id="garageName"
+                            name="garageName"
+                            value={formData.garageName}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.garageName && <p className={styles.error}>{errors.garageName}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="mobileNo">Mobile Number</label>
+                        <input
+                            type="text"
+                            id="mobileNo"
+                            name="mobileNo"
+                            value={formData.mobileNo}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.mobileNo && <p className={styles.error}>{errors.mobileNo}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.email && <p className={styles.error}>{errors.email}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="serviceType">Service Type</label>
+                        <select
+                            id="serviceType"
+                            name="serviceType"
+                            value={formData.serviceType}
+                            onChange={(e) => {
+                                handleChange(e);
+                                handleService(e);
+                            }}
+                            className={styles.input}
                         >
-                            <label htmlFor={field} className={styles.label}>
-                                {field.replace(/([A-Z])/g, ' $1').toUpperCase()}
-                            </label>
-                            <input
-                                type={field.includes('password') ? 'password' : 'text'}
-                                name={field}
-                                id={field}
-                                className={styles.input}
-                                value={formData[field]}
-                                onChange={handleChange}
-                            />
-                            {errors[field] && <p className={styles.error}>{errors[field]}</p>}
-                        </motion.div>
-                    ))}
-                    <div className="flex gap-4 mb-4">
-                        <button type="button" className={styles.button} onClick={getLocation}>
-                            Get Location
+                            <option value="">Select a service type</option>
+                            {serviceTypes.map((item, index) => (
+                                <option key={index} value={item}>{item}</option>
+                            ))}
+                        </select>
+                        {errors.serviceType && <p className={styles.error}>{errors.serviceType}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="addressDto.streetAddress">Street Address</label>
+                        <input
+                            type="text"
+                            id="addressDto.streetAddress"
+                            name="streetAddress"
+                            value={formData.addressDto.streetAddress}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.streetAddress && <p className={styles.error}>{errors.streetAddress}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="addressDto.city">City</label>
+                        <input
+                            type="text"
+                            id="addressDto.city"
+                            name="city"
+                            value={formData.addressDto.city}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.city && <p className={styles.error}>{errors.city}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="addressDto.state">State</label>
+                        <input
+                            type="text"
+                            id="addressDto.state"
+                            name="state"
+                            value={formData.addressDto.state}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.state && <p className={styles.error}>{errors.state}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="addressDto.country">Country</label>
+                        <input
+                            type="text"
+                            id="addressDto.country"
+                            name="country"
+                            value={formData.addressDto.country}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.country && <p className={styles.error}>{errors.country}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="addressDto.zipCode">Zip Code</label>
+                        <input
+                            type="text"
+                            id="addressDto.zipCode"
+                            name="zipCode"
+                            value={formData.addressDto.zipCode}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.zipCode && <p className={styles.error}>{errors.zipCode}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="licenseNumber">License Number</label>
+                        <input
+                            type="text"
+                            id="licenseNumber"
+                            name="licenseNumber"
+                            value={formData.licenseNumber}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.licenseNumber && <p className={styles.error}>{errors.licenseNumber}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="yrsOfOperation">Years of Operation</label>
+                        <input
+                            type="text"
+                            id="yrsOfOperation"
+                            name="yrsOfOperation"
+                            value={formData.yrsOfOperation}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.yrsOfOperation && <p className={styles.error}>{errors.yrsOfOperation}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.password && <p className={styles.error}>{errors.password}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className={styles.label} htmlFor="confirmPassword">Confirm Password</label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            className={styles.input}
+                        />
+                        {errors.confirmPassword && <p className={styles.error}>{errors.confirmPassword}</p>}
+                    </div>
+                    <div className="mb-4 flex justify-between">
+                        <button
+                            type="button"
+                            className={styles.button}
+                            onClick={getLocation}
+                            disabled={gettingLocation}
+                        >
+                            {gettingLocation ? 'Detecting Location...' : 'Get Current Location'}
+                        </button>
+                        <button
+                            type="submit"
+                            className={styles.button}
+                            disabled={loading}
+                        >
+                            {loading ? 'Registering...' : 'Register'}
                         </button>
                     </div>
-                    {message && (
-                        <div className={`${styles.message} ${messageType === 'success' ? styles.success : 'bg-red-100 text-red-600 border border-red-300'}`}>
-                            {message}
-                        </div>
-                    )}
-                    <button type="submit" className={styles.button}>
-                        Register Garage
-                    </button>
                 </form>
-                <div className="mt-4 text-center">
-                    <Link to="/login" className={styles.link}>
-                        Already have an account? Login
-                    </Link>
-                </div>
+                {message && (
+                    <div className={`${styles.message} ${messageType === 'success' ? styles.success : ''}`}>
+                        {message}
+                    </div>
+                )}
+                <p className="mt-4 text-center">
+                    Already have an account? <Link to="/login" className={styles.link}>Login here</Link>
+                </p>
             </motion.div>
         </div>
     );

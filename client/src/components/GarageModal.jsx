@@ -1,48 +1,71 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 
-const GarageModal = ({ garage, onClose }) => {
-  if (!garage) return null;
+const GarageModal = ({ garage, onClose, onBook, latitude, longitude }) => {
+  const styles = {
+    modalContainer: 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50',
+    modalContent: 'bg-white rounded-lg p-8 w-full max-w-lg',
+    modalTitle: 'text-2xl font-bold mb-4',
+    modalDetails: 'text-sm text-gray-700 mb-4',
+    buttonContainer: 'flex justify-between mt-6',
+    button: 'bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 text-sm sm:text-base',
+    cancelButton: 'bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300 text-sm sm:text-base',
+  };
 
-  const address = garage.addressForUserDto || {};
-  const streetAddress = address.streetAddress || 'N/A';
-  const city = address.city || 'N/A';
+  const handleBookClick = () => {
+    onBook(garage.id);
+    onClose();
+  };
 
-  // Dummy latitude and longitude values
-  const dummyLatitude = 37.7749; // Example: San Francisco latitude
-  const dummyLongitude = -122.4194; // Example: San Francisco longitude
+  const handleGoToMap = () => {
+    onClose();
+    if (latitude && longitude) {
+      window.open(`https://www.google.com/maps?q=${latitude},${longitude}`, '_blank');
+    } else {
+      console.error('Latitude and Longitude are not available');
+    }
+  };
 
   return (
-    <motion.div 
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+    <motion.div
+      className={styles.modalContainer}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <motion.div 
-        className="bg-white rounded-lg shadow-lg p-6 sm:p-8 w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl mx-4"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        exit={{ scale: 0.8, opacity: 0 }}
+      <motion.div
+        className={styles.modalContent}
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.8 }}
       >
-        <h2 className="text-xl sm:text-2xl font-bold mb-4">{garage.garageName}</h2>
-        <p className="text-sm sm:text-base text-gray-600 mb-2">Owner: {garage.ownerName}</p>
-        <p className="text-sm sm:text-base text-gray-600 mb-2">Address: {streetAddress}, {city}</p>
-        <p className="text-sm sm:text-base text-gray-600 mb-2">Phone: {garage.mobileNo}</p>
-        <a
-          href={`https://www.google.com/maps?q=${dummyLatitude},${dummyLongitude}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300"
-        >
-          View on Google Maps
-        </a>
-        <button
-          className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
-          onClick={onClose}
-        >
-          Close
-        </button>
+        <h2 className={styles.modalTitle}>{garage.garageName}</h2>
+        <p className={styles.modalDetails}>Owner: {garage.ownerName}</p>
+        <p className={styles.modalDetails}>Mobile: {garage.mobileNo}</p>
+        <p className={styles.modalDetails}>Email: {garage.email}</p>
+        <p className={styles.modalDetails}>Address: {garage.addressDto.streetAddress}, {garage.addressDto.city}</p>
+        <p className={styles.modalDetails}>Service Type: {garage.serviceType}</p>
+
+        <div className={styles.buttonContainer}>
+          <button
+            className={styles.button}
+            onClick={handleBookClick}
+          >
+            Book Garage
+          </button>
+          <button
+            className={styles.button}
+            onClick={handleGoToMap}
+          >
+            Go to Map
+          </button>
+          <button
+            className={styles.cancelButton}
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );

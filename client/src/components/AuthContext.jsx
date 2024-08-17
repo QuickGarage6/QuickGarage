@@ -3,7 +3,7 @@
 // src/AuthContext.jsx
 
 import { createContext, useState, useContext } from 'react';
-
+import { useEffect } from 'react';
 const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -11,12 +11,19 @@ export const AuthProvider = ({ children }) => {
   const login = (type) => {
     setIsAuthenticated(true);
     setUserType(type);
+    localStorage.setItem('userType', type);
   };
   const logout = () => {
     setIsAuthenticated(false);
     setUserType(null);
+    localStorage.removeItem('userType');
   };
-
+  useEffect(() => {
+    const storedUserType = localStorage.getItem('userType');
+    if (storedUserType) {
+      setUserType(storedUserType);
+    }
+  }, []);
   return (
     <AuthContext.Provider value={{ isAuthenticated,userType, login, logout }}>
       {children}
@@ -24,5 +31,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use authentication context
 export const useAuth = () => useContext(AuthContext);

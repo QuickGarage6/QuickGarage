@@ -27,7 +27,7 @@ const Login = () => {
 
         try {
             const response = await axios.post(url, {
-                userName: emailOrPhone,
+                userName: emailOrPhone.trim(),
                 password: password.trim(),
             });
             if (response.status === 200) {
@@ -39,11 +39,9 @@ const Login = () => {
                 setErrorMessage(response.data.message || 'Login failed.');
             }
         } catch (error) {
-            console.error('Login error:', error);
-            setErrorMessage('An error occurred while logging in.');
+            setErrorMessage(error.response.data.message);
         }
     };
-
     const handlePasswordReset = async (event) => {
         event.preventDefault();
         if (newPassword !== confirmPassword) {
@@ -58,6 +56,7 @@ const Login = () => {
             await axios.put(url, {
                 newPassword: newPassword.trim(),
                 username: resetEmail,
+                confirmPassword:confirmPassword.trim(),
             });
             setSuccessMessage('Password has been reset successfully.');
             setShowModal(false);
