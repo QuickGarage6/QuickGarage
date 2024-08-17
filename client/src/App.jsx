@@ -51,11 +51,13 @@ function App() {
 
 function AdminRoutes() {
   return (
+    <>
     <Routes>
       <Route path="" element={<UserLogin />} />
       <Route path="/user-card" element={<UserDetailsCard />} />
       <Route path="/garage-card" element={<GarageDetailsCard />} />
     </Routes>
+    </>
   );
 }
 
