@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.dto.ApiResponse;
 import com.app.dto.ForgotPasswordDto;
-import com.app.dto.GarageDetailsForUserDto;
+import com.app.dto.GarageDto;
 import com.app.dto.UpdatePasswordDto;
 import com.app.dto.UserSignInDto;
 import com.app.dto.UserSignUpDto;
@@ -124,7 +124,7 @@ public class UserController {
 	}
 
 	@GetMapping("/garages")
-	public List<GarageDetailsForUserDto> getAllGaragesForUser() {
+	public List<GarageDto> getAllGaragesForUser() {
 		return garageService.getAllGaragesForUser();
 	}
 	

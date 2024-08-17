@@ -46,9 +46,9 @@ public class GarageController {
 	private ModelMapper modelMapper;
 
 	@PostMapping("/signup")
-	public ResponseEntity<ApiResponse<Garage>> signUp(@RequestBody @Valid GarageSignUpDto garageSignUpDto) throws Exception {
+	public ResponseEntity<ApiResponse<Garage>> signUp(@RequestBody @Valid GarageSignUpDto garageSignUpDto)
+			throws Exception {
 
-		
 		Garage garage = modelMapper.map(garageSignUpDto, Garage.class);
 		if (garageSignUpDto.getAddressDto() != null) {
 			Address address = modelMapper.map(garageSignUpDto.getAddressDto(), Address.class);
@@ -146,33 +146,17 @@ public class GarageController {
 		return ResponseEntity.ok(response);
 	}
 
-
 	@GetMapping("/{garageId}/notification")
-  public List<NotificationDto> getNotification(@PathVariable @NotNull Long garageId) {
-      return notificationService.getNotifications(garageId);
-  }
+	public List<NotificationDto> getNotification(@PathVariable @NotNull Long garageId) {
+		return notificationService.getNotifications(garageId);
+	}
+
 	@GetMapping("/services")
 	public ResponseEntity<ApiResponse<List<Services>>> getServices() {
-		List<Services> service= garageService.getServices();
-		ApiResponse<List<Services>> response = new ApiResponse<>(HttpStatus.OK, "Service List displayed successfully", service);
+		List<Services> service = garageService.getServices();
+		ApiResponse<List<Services>> response = new ApiResponse<>(HttpStatus.OK, "Service List displayed successfully",
+				service);
 		return ResponseEntity.ok(response);
 	}
-	
-//	@GetMapping
-//	public ResponseEntity<List<Notification>> getNotifications(@PathVariable Long garageId) {
-//		List<Notification> notifications = notificationService.getNotificationsForGarage(garageId);
-//		return ResponseEntity.ok(notifications);
-//	}
 
-//	@GetMapping("/nearby")
-//    public List<Garage> getNearbyGarages(@RequestParam double latitude,
-//                                         @RequestParam double longitude,
-//                                         @RequestParam(defaultValue = "5") double radiusInKm) {
-//        return garageService.getNearbyGarages(latitude, longitude, radiusInKm);
-//    }
-
-//	@GetMapping("/{garageId}/interactions")
-//	public List<InteractionDto> getGarageInteractions(@PathVariable @NotNull Long garageId) {
-//		return interactionService.getInteractionsForGarage(garageId);
-//	}
 }

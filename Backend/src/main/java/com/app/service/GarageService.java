@@ -32,7 +32,7 @@ public interface GarageService {
 
 	public List<GarageDto> getAllGarages();
 
-	public List<GarageDetailsForUserDto> getAllGaragesForUser();
+	public List<GarageDto> getAllGaragesForUser();
 	
 	public List<Garage> getNearbyGarages(double latitude, double longitude, double radiusInKm);
 	

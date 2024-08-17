@@ -197,9 +197,9 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public List<GarageDetailsForUserDto> getAllGaragesForUser() {
+	public List<GarageDto> getAllGaragesForUser() {
 		List<Garage> garages = garageRepository.findAll();
-		return garages.stream().map(garage -> modelMapper.map(garage, GarageDetailsForUserDto.class))
+		return garages.stream().map(garage -> modelMapper.map(garage, GarageDto.class))
 				.collect(Collectors.toList());
 
 	}
