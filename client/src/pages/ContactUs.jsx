@@ -84,7 +84,7 @@ const ContactUs = () => {
         </p>
         <div className={styles.contactInfoItem}>
           <p className="font-semibold">Email:</p>
-          <p>support@quickgarage.com</p>
+          <p>info@quickgarage.com</p>
         </div>
         <div className={styles.contactInfoItem}>
           <p className="font-semibold">Phone:</p>
@@ -92,7 +92,7 @@ const ContactUs = () => {
         </div>
         <div className={styles.contactInfoItem}>
           <p className="font-semibold">Address:</p>
-          <p>123 Garage St, Auto City</p>
+          <p>Cdac, Panchavti Pune, Maharashtra</p>
         </div>
         <div className={styles.socialLinks}>
           <a href="https://facebook.com" className={styles.socialIcon}>

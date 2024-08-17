@@ -26,7 +26,7 @@ const LandingPage = () => {
     login('customer');
     navigate('/login');
   };
-
+  localStorage.setItem('isLoggedIn',false);
   const handleGarageFlow = () => {
     login('garage');
     navigate('/login');
